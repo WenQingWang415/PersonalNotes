@@ -69,13 +69,13 @@ nginx.exe -c conf/nginx.conf
 
 **还不懂？看下图：**
 
-![image-20201117160938187](G:\个人笔记\nginx\img\image-20201117160938187.png)
+![image-20201117160938187](G:\个人笔记\nginx\nginx.assets\image-20201117160938187.png)
 
 #####1.1正向代理的作用：
 
 ###### **访问本来无法访问的资源**
 
-![image-20201117162748551](G:\个人笔记\nginx\img\image-20201117162748551.png)
+![image-20201117162748551](G:\个人笔记\nginx\nginx.assets\image-20201117162748551.png)
 
 #### 2.反向代理
 
