@@ -57,7 +57,8 @@ nginx.exe -c conf/nginx.conf
 
 #### 1.正向代理
 
-正向代理（forward proxy）：是一个位于客户端(用户A)和原始服务器(origin server)(目标服务器)之间的服务器(代理服务器)，为了从原始服务器取得内容，客户端向代理服务器发送一个请求并指定目标(原始服务器)，然后代理服务器向原始服务器转交请求并将获得的内容返回给客户端。客户端必须要进行一些特别的配置才能使用正向代理。一般情况下，如果没有特别说明，代理技术默认是指正向代理技术。
+> 正向代理（forward proxy）：是一个位于客户端(用户A)和原始服务器(origin server)(目标服务器)之间的服务器(代理服务器)，为了从原始服务器取得内容，客户端向代理服务器发送一个请求并指定目标(原始服务器)，然后代理服务器向原始服务器转交请求并将获得的内容返回给客户端。客户端必须要进行一些特别的配置才能使用正向代理。一般情况下，如果没有特别说明，代理技术默认是指正向代理技术。
+>
 
 
 
@@ -149,17 +150,17 @@ server{
 }
 ```
 
-注意：
-
-1：不能有hostname
-
-2：必须有resolver, 即dns，超时时间可选项
-
-3：配置缓存大小，关闭磁盘缓存读写减少I/O、代理连接超时时间
-
-4：配置代理服务器 Http 状态缓存时间
-
-配置好后，重启nginx，以浏览器为例，要使用这个代理服务器，则只需将浏览器代理设置为http://IP:8888，即可使用了。
+> 注意：
+>
+> 1：不能有hostname
+>
+> 2：必须有resolver, 即dns，超时时间可选项
+>
+> 3：配置缓存大小，关闭磁盘缓存读写减少I/O、代理连接超时时间
+>
+> 4：配置代理服务器 Http 状态缓存时间
+>
+> 配置好后，重启nginx，以浏览器为例，要使用这个代理服务器，则只需将浏览器代理设置为http://IP:8888，即可使用了。
 
 #### 2.反向代理
 
@@ -194,17 +195,179 @@ http {
 
 #### 1.轮询法（默认）
 
+> 将请求按顺序轮流的分配到后端服务器上，它将均衡的对待后端的每一台服务器，而不关心服务器的实际连接数和当前的系统负载
 
+```nginx
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+    #注意 加了upstream 就是代表负载均衡， 
+    ##
+	upstream localhost{
+        #要做负载均衡的IP或者域名
+	   server 192.168.43.21:8030;
+	     server 192.168.43.29:8031;
+		   server 192.168.2.150:8032;
+		     server 192.168.2.132:8035;
+	   
+	} 
+    server {
+        listen       8090;
+        server_name  localhost;
+        location / {
+           # root   html;
+            #index  index.html index.htm;
+			 proxy_pass   http://localhost;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+       
+    }
+
+}
+```
+
+说明：
+
+![image-20201118105426025](https://i.loli.net/2020/11/18/1SGADikBP39OcUg.png)
 
 #### 2.加权轮询发（weight）
 
+> - 不同的后端服务器可能机器的配置和当前的系统的负载并不相同，因此他们的抗压能力也不同
+> - 给配置越高的权重越高，可以处理更多的请求
+> - 配置低，负载高的机器，分配低的权重，降低其系统的负载
+> - 加权轮询能更好的将请求按照权重分配到后端
+> - weight 越大分配的权限就就越高，访问量越大
 
+```nginx
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+    #注意 加了upstream 就是代表负载均衡， 
+    #weight=10 值越大访问的的次数就越多
+	upstream localhost{
+        #要做负载均衡的IP或者域名
+	   server 192.168.43.21:8030 weight=10;
+	     server 192.168.43.29:8031 weight=8;
+		   server 192.168.2.150:8032 weight=5;
+		     server 192.168.2.132:8035 weight=2;
+	   
+	} 
+    server {
+        listen       8090;
+        server_name  localhost;
+        location / {
+           # root   html;
+            #index  index.html index.htm;
+			 proxy_pass   http://localhost;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+       
+    }
+
+}
+```
 
 #### 3.原地址哈希法(ip_hash)
 
+> - 通过获取客户端的IP地址，通过哈希函数计算得到一个数值
+> - 用该数值对服务器列表的大小进行摸运算，得到的结果便是客户端要访问的服务器的序号
+> - 采用原地址哈希进行负载均衡，同一地址的客户端，当服务器列表不变时，它每次都会映射到同一台服务器进行访问。
+> - 可以保证来自同一IP的请求被打到固定的机器上，可以解决session的问题（有的时候session会对不上，建议使用认证或者Redis）
 
+```ngin
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+    #注意 加了upstream 就是代表负载均衡， 
+    #weight=10 值越大访问的的次数就越多
+	upstream localhost{
+        #要做负载均衡的IP或者域名
+        ip_hash;
+	   server 192.168.43.21:8030 weight=10;
+	     server 192.168.43.29:8031 weight=8;
+		   server 192.168.2.150:8032 weight=5;
+		     #server 192.168.2.132:8035 weight=2;
+		     #如果注释掉在访问的会自动变化
+	   
+	} 
+    server {
+        listen       8090;
+        server_name  localhost;
+        location / {
+           # root   html;
+            #index  index.html index.htm;
+			 proxy_pass   http://localhost;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+       
+    }
+
+}
+```
 
 #### 4.最小连接数法（least_conn）
+
+> 由于每台的服务器配置各不相同，对请求的处理速度有快慢，最小连接数根据后端服务器当前的情况，动态选择最小的连接数，来处理当前的请求，尽可能的提高后端服务器的效率，将负责合理分流每一台服务器
+
+```nginx
+
+```
+
+
 
 
 
