@@ -474,6 +474,92 @@ upstream tomcat_server {
 
 ### 日志管理和日志分割
 
+#### 日志管理
+
+通过访问日志，你可以得到用户地域来源、跳转来源、使用终端、某个URL访问量等相关信息
+
+ 通过错误日志，你可以得到系统某个服务或server的性能瓶颈等
+
+#### 日志格式
+
+日志生成的到Nginx根目录logs/access.log文件，默认使用“main”日志格式，也可以自定义格式 
+
+默认“main”日志格式
+
+```nginx
+log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+'$status $body_bytes_sent "$http_referer" '
+'"$http_user_agent" "$http_x_forwarded_for"';
+$remote_addr：客户端的ip地址(代理服务器，显示代理服务ip)
+$remote_user：用于记录远程客户端的用户名称（一般为“-”）
+$time_local：用于记录访问时间和时区
+$request：用于记录请求的url以及请求方法
+$status：响应状态码，例如：200成功、404页面找不到等。
+$body_bytes_sent：给客户端发送的文件主体内容字节数
+$http_user_agent：用户所使用的代理（一般为浏览器）
+$http_x_forwarded_for：可以记录客户端IP，通过代理服务器来记录客户端的ip地址
+$http_referer：可以记录用户是从哪个链接访问过来的
+```
+
+#### 日志切割
+
+nginx的日志文件没有rotate功能
+
+编写每天生成一个日志，我们可以写一个nginx日志切割脚本来自动切割日志文件
+
+第一步就是重命名日志文件 （不用担心重命名后nginx找不到日志文件而丢失日志。在你未 重新打开原名字的日志文件前，nginx还是会向你重命名的文件写日志，Linux是靠文件描述 符而不是文件名定位文件 ）
+
+第二步向nginx主进程发送USR1信号
+
+- nginx主进程接到信号后会从配置文件中读取日志文件名称
+- 重新打开日志文件 (以配置文件中的日志名称命名) ，并以工作进程的用户作为日志文件 的所有者
+- 重新打开日志文件后，nginx主进程会关闭重名的日志文件并通知工作进程使用新打开 的日志文件
+- 工作进程立刻打开新的日志文件并关闭重名名的日志文件
+- 然后你就可以处理旧的日志文件了。[或者重启nginx服务]
+
+nginx日志按每分钟自动切割脚本如下 ：
+
+新建shell脚本：
+
+```nginx
+vi /opt/nginx/nginx_log.sh
+```
+
+复制到脚本里面
+
+```nginx
+#!/bin/bash
+#设置日志文件存放目录
+LOG_HOME="/opt/nginx/logs/"
+#备分文件名称
+LOG_PATH_BAK="$(date -d yesterday +%Y%m%d%H%M)".access.log
+#重命名日志文件
+mv ${LOG_HOME}/access.log ${LOG_HOME}/${LOG_PATH_BAK}.log
+#向nginx主进程发信号重新打开日志
+kill -USR1 `cat /opt/nginx/logs/nginx.pid`
+
+```
+
+创建crontab设置作业
+
+设置日志文件存放目录crontab -e
+
+   cron表达式:  https://cron.qqe2.com/
+
+```ngin
+*/1 * * * * sh /opt/nginx/nginx_log.sh
+```
+
+   重新启动定时任务
+
+```nginx
+service crond restart
+```
+
+
+
+
+
 ### 动态分离
 
 
