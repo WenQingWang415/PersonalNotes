@@ -310,7 +310,7 @@ http {
 > - 采用原地址哈希进行负载均衡，同一地址的客户端，当服务器列表不变时，它每次都会映射到同一台服务器进行访问。
 > - 可以保证来自同一IP的请求被打到固定的机器上，可以解决session的问题（有的时候session会对不上，建议使用认证或者Redis）
 
-```ngin
+```nginx
 http {
     include       mime.types;
     default_type  application/octet-stream;
@@ -331,12 +331,12 @@ http {
     #注意 加了upstream 就是代表负载均衡， 
     #weight=10 值越大访问的的次数就越多
 	upstream localhost{
-        #要做负载均衡的IP或者域名
+        #要做负载均衡的IP或
         ip_hash;
-	   server 192.168.43.21:8030 weight=10;
-	     server 192.168.43.29:8031 weight=8;
-		   server 192.168.2.150:8032 weight=5;
-		     #server 192.168.2.132:8035 weight=2;
+	   server 192.168.43.21:8030 ;
+	     server 192.168.43.29:8031 ;
+		   server 192.168.2.150:8032 ;
+		     #server 192.168.2.132:8035 ;
 		     #如果注释掉在访问的会自动变化
 	   
 	} 
@@ -364,18 +364,111 @@ http {
 > 由于每台的服务器配置各不相同，对请求的处理速度有快慢，最小连接数根据后端服务器当前的情况，动态选择最小的连接数，来处理当前的请求，尽可能的提高后端服务器的效率，将负责合理分流每一台服务器
 
 ```nginx
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
 
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+    #注意 加了upstream 就是代表负载均衡， 
+    #weight=10 值越大访问的的次数就越多
+	upstream localhost{
+        #要做负载均衡的IP
+        
+      least_conn;
+            
+	   server 192.168.43.21:8030 ;
+	     server 192.168.43.29:8031 ;
+		   server 192.168.2.150:8032;
+		     #server 192.168.2.132:8035;
+		     #如果注释掉在访问的会自动变化
+	   
+	} 
+    server {
+        listen       8090;
+        server_name  localhost;
+        location / {
+           # root   html;
+            #index  index.html index.htm;
+			 proxy_pass   http://localhost;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+       
+    }
+
+}
+```
+
+​                                                            ==以下两种在linux系统上使用，windows系统不支持，以下两种没有测试==
+
+#### 5.Fair
+
+根据后端服务器的响应时间来分配请求，响应时间短的优先分配（比weight、ip_hash更智能的负载均衡算法。需安装upsteram_fair模块）
+
+> linux下安装fair
+>
+> 下载地址：https://github.com/gnosek/nginx-upstream-fair
+>
+> 解压：unzip   nginx-upsiream-fair-master.zip
+>
+> ---prefix编译opt目录 编译皱增加add-module模块
+>
+> 增加模块： ./configure --prefix=/opt/nginx --add-module=/opt/nginx-upstream-fair-master
+>
+> defalut_port问题修改：cd  nginx-upsiream-fair-master
+>
+> sed -i 's/default_port/no_port/g' ngx_http_upstream_fair_module.c
+>
+> make
+>
+> make install
+
+```nginx
+upstream tomcat_server {
+    fair;
+    server 192.168.10.11:8080 weight=1;
+    server 192.168.10.12:8080 weight=1;
+}
 ```
 
 
 
-
-
-#### 5.Fair
-
-
-
 #### 6.url_hash
+
+url_hash：按访问的URL的哈希结果来分配请求，使每个URL定向到一台后端服务器（提高后端缓存服务器的效率，需安装Nginx的hash软件包）
+
+> 下载地址：https://github.com/evanmiller/nginx_upstream_hash
+>
+> 解压zip：unzip nginx_upstream_hash-master.zip
+>
+>  增加模块： ./configure --prefix=/opt/nginx --add-module=/opt/ nginx_upstream_hash-master
+>
+> make
+>
+> make install
+
+```nginx
+upstream tomcat_server {
+    hash $request_uri;
+    server 192.168.10.11:8080 weight=1;
+    server 192.168.10.12:8080 weight=1;
+}
+```
 
 
 
