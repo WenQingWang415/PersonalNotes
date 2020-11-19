@@ -47,6 +47,226 @@ nginx.exe -c conf/nginx.conf
 我一般使用这个启动
 ```
 
+### 语法说明
+
+#### Location
+
+##### 语法规则
+
+```nginx
+location [=|~|~*|^~] /uri/ {… }
+```
+
+- 首先匹配 =
+- 其次匹配^~
+- 其次是按文件中顺序的正则匹配
+- 最后是交给 /通用匹配
+- 当有匹配成功时候，停止匹配，按当前匹配规则处理请求
+
+##### 符号含义
+
+```nginx
+#表示精确匹配
+=
+#表示uri以某个常规字符串开头，理解为匹配 url路径即可
+#nginx不对url做编码，因此请求为/static/20%/aa，可以被规则^~ /static/ /aa匹配到（注
+意是空格）
+^~
+#表示区分大小写的正则匹配
+~
+#表示不区分大小写的正则匹配
+~*
+#!~和!~*分别为区分大小写不匹配及不区分大小写不匹配的正则
+!~和!~*
+#用户所使用的代理（一般为浏览器）
+/
+#可以记录客户端IP，通过代理服务器来记录客户端的ip地址
+$http_x_forwarded_for
+#可以记录用户是从哪个链接访问过来的
+$http_referer
+```
+
+##### 常用规则
+
+- 直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理
+
+第一个必选规则
+
+```nginx
+location = / {
+proxy_pass http://tomcat:8080/index
+}
+```
+
+第二个必选规则是处理静态文件请求，这是nginx作为http服务器的强项
+
+- 有两种配置模式，目录匹配或后缀匹配,任选其一或搭配使用
+
+```nginx
+location ^~ /static/ {
+# 请求/static/a.txt 将被映射到实际目录文件:/webroot/res/static/a.txt
+root /webroot/res/;
+}
+location ~* \.(gif|jpg|jpeg|png|css|js|ico)${
+root /webroot/res/;
+}
+```
+
+第三个规则就是通用规则，用来转发动态请求到后端应用服务器
+
+```nginx
+location / {
+proxy_pass http://tomcat:8080/
+}
+```
+
+##### 总结
+
+- 先判断精准命中，如果命中，立即返回结果并结束解析过程
+- 判断普通命中，如果有多个命中，“记录”下来“最长”的命中结果（记录但不结束，最长的为准）
+- 继续判断正则表达式的解析结果，按配置里的正则表达式顺序为准，由上至下开始匹配，一旦匹配 成功1个，立即返回结果，并结束解析过程
+- 普通命中顺序无所谓，是因为按命中的长短来确定。正则命中，顺序有所谓，因为是从前入往后命 中的
+
+#### ReWrite
+
+- rewrite只能放在server{},location{},if{}中 ，并且只能对域名后边的除去传递的参数外的字符串起 作用
+- Nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向
+- Rewrite主要的功能就是实现URL的重写
+- Nginx的Rewrite规则采用Pcre，perl兼容正则表达式的语法规则匹配，如果需要Nginx的Rewrite 功能，在编译Nginx之前，需要编译安装PCRE库
+- 通过Rewrite规则，可以实现规范的URL、根据变量来做URL转向及选择配置
+
+##### 相关指令
+
+- break ：
+  - [ ] 默认值 ：none
+  - [ ] 使用范围 ：if，server，location
+  - [ ] 作用 ：完成当前的规则集，不再处理rewrite指令，需要和last加以区分
+- if ( condition ) {....}
+  - [ ] 默认值 ：none
+  - [ ] 使用范围 ：server，location
+  - [ ] 作用：用于检测一个条件是否符合，符合则执行大括号内的语句。不支持嵌套，不支持多个 条件&&或||处理
+- return
+  - [ ] 默认值 ：none
+  - [ ] 使用范围 ：server，if，location
+  - [ ] 作用：用于结束规则的执行和返回状态码给客户端
+- rewrite regex replacement flag
+  - [ ] 使用范围 ：server，if，location
+  - [ ] 作用：该指令根据表达式来重定向URI，或者修改字符串。指令根据配置文件中的顺序来执 行。注意重写表达式只对相对路径有效
+- uninitialized_variable_warn on|of
+  - [ ] 默认值 ：on
+  - [ ] 使用范围：http,server,location,if
+  - [ ] 作用：该指令用于开启和关闭未初始化变量的警告信息，默认值为开启
+- set variable value
+  - [ ] 默认值 ：none
+  - [ ] 作用：该指令用于定义一个变量，并且给变量进行赋值。变量的值可以是文本、一个变量或 者变量和文本的联合，文本需要用引号引起来
+
+##### rewrite全局变量表
+
+| 变量              |                             含义                             |
+| :---------------- | :----------------------------------------------------------: |
+| $args             |         这个变量等于请求行中的参数，同$query_string          |
+| $content length   |                请求头中的Content-length字段。                |
+| $content_type     |                 请求头中的Content-Type字段。                 |
+| $document_root    |                当前请求在root指令中指定的值。                |
+| $host             |              请求主机头字段，否则为服务器名称。              |
+| $http_user_agent  |                       客户端agent信息                        |
+| $http_cookie      |                       客户端cookie信息                       |
+| $limit_rate       |                  这个变量可以限制连接速率。                  |
+| $request_method   |             客户端请求的动作，通常为GET或POST。              |
+| $remote_addr      |                       客户端的IP地址。                       |
+| $remote_port      |                        客户端的端口。                        |
+| $remote_user      |           已经经过Auth Basic Module验证的用户名。            |
+| $request_filename |     当前请求的文件路径，由root或alias指令与URI请求生成。     |
+| $scheme           |                 HTTP方法（如http，https）。                  |
+| $server_protocol  |          请求使用的协议，通常是HTTP/1.0或HTTP/1.1。          |
+| $server_addr      |       服务器地址，在完成一次系统调用后可以确定这个值。       |
+| $server_name      |                         服务器名称。                         |
+| $server_port      |                   请求到达服务器的端口号。                   |
+| $request_uri      | 包含请求参数的原始URI，不包含主机名，如”/foo/bar.php?arg=baz”。 |
+| $uri              | 不带请求参数的当前URI，$uri不包含主机名，如”/foo/bar.html”。 |
+| $document_uri     |                         与$uri相同。                         |
+
+##### 语法规则：
+
+| 操作符  |                             含义                             |
+| ------- | :----------------------------------------------------------: |
+| = ,!=   |                   比较的一个变量和字符串。                   |
+| ~， ~*  | 与正则表达式匹配的变量，如果这个正则表达式中包含}，;则整个表达式需要用"或'包围。 |
+| -f，!-f |                    检查一个文件是否存在。                    |
+| -d, !-d |                    检查一个目录是否存在。                    |
+| -e，!-e |            检查一个文件、目录、符号链接是否存在。            |
+
+
+
+##### IF指令：
+
+```nginx
+if 语法格式
+if 空格 (条件) {
+重写模式
+}
+# 限制浏览器访问
+if ($http_user_agent ~ Firefox) {
+rewrite ^(.*)$ /firefox/$1 break;
+}
+if ($http_user_agent ~ MSIE) {
+rewrite ^(.*)$ /msie/$1 break;
+}
+if ($http_user_agent ~ Chrome) {
+rewrite ^(.*)$ /chrome/$1 break;
+}
+
+```
+
+##### return指令：
+
+```nginx
+# 限制IP访问
+if ($remote_addr = 192.168.197.142) {
+return 403;
+}
+```
+
+- [ ]  首先从日志查出ip
+- [ ] 修改conf配置文件
+- [ ] 重启配置
+
+##### rewrite指令：
+
+- [ ] 判断目录是否存在
+- [ ] 服务器内部的rewrite和302跳转不一样.跳转的话URL都变了,变成重新http请求index.html,而内部 rewrite,上下文没变
+
+```nginx
+if (!-e $document_root$fastcgi_script_name) {
+rewrite ^.*$ /index.html break;
+}
+```
+
+##### set指令：
+
+- [ ] set指令是设置变量用的,可以用来达到多条件判断时作标志用
+- [ ] 判断IE并重写,且不用break;我们用set变量来达到目的
+
+### 运行过程
+
+#### 默认情况下，运行中的Nginx会包含如下进程：
+
+- 主进程master process（父进程）
+  - [ ] 主进程充当监控进程
+  - [ ] 负责整个进程组与管理用户的交互接口，同时对进程进行监护
+  - [ ] 它不需要处理网络事件，不负责业务执行，只会通过管理worker进程来实现重启服务、关闭 服务、配置文件生效等功能
+- 子进程worker process（工作进程）
+  - [ ] 子进程充当工作进程
+  - [ ] 负责完成具体的任务
+  - [ ] 完成用户请求接收与返回用户数据，以及与后端应用服务器的数据交互等工作
+
+#### 原理介绍：
+
+- Nginx 的高并发得益于其采用了 epoll 模型，与传统的服务器程序架构不同，epoll 是linux 内核 2.6 以后才出现的
+- Nginx 采用 epoll 模型，异步非阻塞，而 Apache 采用的是select 模型
+  - [ ] Select 特点：select 选择句柄的时候，是遍历所有句柄，也就是说句柄有事件响应时，select 需要遍历所有句柄才能获取到哪些句柄有事件通知，因此效率是非常低
+  - [ ] epoll 的特点：epoll 对于句柄事件的选择不是遍历的，是事件响应的，就是句柄上事件来就 马上选择出来，不需要遍历整个句柄链表，因此效率非常高
+
 ### Nginx配置文件说明
 
 ```nginx
@@ -558,9 +778,9 @@ service crond restart
 
 
 
-
-
 ### 动态分离
+
+
 
 
 
