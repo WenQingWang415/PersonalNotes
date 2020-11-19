@@ -814,3 +814,163 @@ expires 30d;
 
 
 
+#### 测试限流 AB工具
+
+> windows安装
+>
+> 官网下载：https://www.apachehaus.com/cgi-bin/download.plx
+>
+> 下载解压
+>
+> 修改端口：conf/httpd.conf文件的端口配置，默认是80端口
+>
+> Cmd命令管理员启动，切换到Bin目录在在执行命令
+>
+> 输入命令安装：httpd -k install
+
+```ngin
+ab -n1000 -c 10 http://www.buruyouni.com/
+-n 表示请求数，-c 表示并发数.
+http://www.buruyouni.com/是我的小网站挂在虚拟主机上的 ,-n访问1000次, -c并发10个
+```
+
+> linux安装
+>
+> 指令 ：yum -y install httpd-tools
+
+
+
+| Key                  | 含义                         |
+| -------------------- | ---------------------------- |
+| Document  path       | 测试的页面                   |
+| Document Length      | 页面的大小                   |
+| Concurrency Level    | 并发数量，并发用户           |
+| Time taken for tests | 测试消耗总时间               |
+| Complete requests    | 请求数量，并发连接数         |
+| Failed requests      | 请求失败的数量               |
+| Write errors         | 错误数量                     |
+| Requests per  second | 每秒钟的请求梁。吞吐率       |
+| Time per request     | 每次请求需要的时间，响应时间 |
+|                      |                              |
+
+##### 请求返回详解
+
+```nginx
+##服务器软件和版本
+Server Hostname:        www.baidu.com  
+##请求的地址/域名
+Server Port:            80   
+##端口
+
+Document Path:          /s  
+##请求的路径
+Document Length:        112435 bytes  
+##页面数据/返回的数据量
+
+Concurrency Level:      10   
+##并发数
+Time taken for tests:   4.764 seconds  
+##共使用了多少时间 
+Complete requests:      100  
+##请求数 
+Failed requests:        99  
+##失败请求  百度为什么失败这么多，应该是百度做了防范  
+   (Connect: 0, Receive: 0, Length: 99, Exceptions: 0)
+Total transferred:      11342771 bytes  
+##总共传输字节数，包含http的头信息等 
+HTML transferred:       11247622 bytes  
+##html字节数，实际的页面传递字节数 
+Requests per second:    20.99 [#/sec] (mean) 
+ ##每秒多少请求，这个是非常重要的参数数值，服务器的吞吐量 
+Time per request:       476.427 [ms] (mean)   
+##用户平均请求等待时间 
+Time per request:       47.643 [ms] (mean, across all concurrent requests)  
+##服务器平均处理时间，也就是服务器吞吐量的倒数 
+Transfer rate:          2325.00 [Kbytes/sec] received
+ ##每秒获取的数据长度
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       22   41  12.4     39      82
+##连接的最小时间，平均值，中值，最大值
+Processing:   113  386 211.1    330    1246
+##处理时间
+Waiting:       25   80  43.9     73     266
+##等待时间
+Total:        152  427 210.1    373    1283
+##合计时间
+
+Percentage of the requests served within a certain time (ms)
+  50%    373   
+## 50%的请求在373ms内返回 
+  66%    400   
+## 60%的请求在400ms内返回 
+  75%    426
+  80%    465
+  90%    761
+  95%    930
+  98%   1192
+  99%   1283
+ 100%   1283 (longest request)
+```
+
+​					
+
+####三种限流的方式
+
+##### 客户端限流
+
+###### limit_conn_zone
+
+```nginx
+http{
+ limit_conn_zone $binary_remote_addr zone=one:10m;
+ server
+ {
+   ......
+  limit_conn one 10;
+        #-n 表示请求数，-c 表示并发数.
+  ......
+ }
+}
+```
+
+其中“limit_conn one 10”既可以放在server层对整个server有效，也可以放在location中只对单独的location有效。
+该配置表明：客户端的并发连接数只能是10个。
+
+###### limit_req_zone（推荐使用）
+
+```ngin
+
+```
+
+
+
+
+
+
+
+
+
+##### 服务端限流
+
+###### ngx_http_upstream_module（推荐使用）
+
+```nginx
+
+```
+
+
+
+
+
+#### 安全配置
+
+
+
+
+
+
+
+
+
