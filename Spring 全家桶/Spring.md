@@ -196,7 +196,7 @@
 >
 > 属性名与配置文件id一样如图
 >
-> ![属性名与配置文件id一样如图](https://i.loli.net/2020/11/30/fYGnAhZ5UCDO1Jj.png)
+> ![属性名与配置文件id一样如图](https://i.loli.net/2020/12/01/cRusJfyZBOVb2No.png)
 >
 > 语法：
 >
@@ -264,8 +264,115 @@
 > 把包中的所有的类，找到类中的注解，按照注解的功能创建对象或者属性赋值
 >
 > ```java
+> 指定包的三种方式，第一种
+> <context:component-scan base-package="指定你注解的包名"/>
+> 指定包的三种方式，第二种 使用分割符(,或者;)分割多个包名
+> <context:component-scan base-package="指定你注解的包名,指定你注解的包名"/>
+> 指定包的三种方式，第三种 指定父包名  不建议使用
+> <context:component-scan base-package="指定你注解的包名的上一级"/>
+> ```
+>
+> **@Component**
+>
+> ```java
+> @Component
+> public class student {
+> }
+> @Component(value = "mystudent") 等价于<bean id="mystudent" class="xx"/>
+> 可以简写：@Component("mystudent") //比较常用
+> 可以省略：@Component 不指定名称，由spring提供默认名称，类名首字母小写
+> 然后指定扫描包路径
 > <context:component-scan base-package="指定你注解的包名"/>
 > ```
+>
+> spring中和@Component注解功能一致的创建对象还有：
+>
+> - @Repository（持久层） ：放在dao的实现类上面，表示创建dao对象，dao对象是访问数据库的。
+> - @Service（业务层）：放在Service的实现类上面，创建Service对象，Service对象就是做业务处理，可以有事务功能等
+> - @Controller（控制层）：放在Controller的控制器类上面，创建Controller对象，能够接受用户的处理参数，返回的结果
+>
+> **@Value**
+>
+> 语法：
+>
+> ```java 
+> @Value("29")
+> private  int age;
+> ```
+>
+> ```java
+> 简单类型属性赋值
+> 属性：Value 是String类型的，表示简单类型赋值
+> 位置： 在定义属性的上面，不需要set方法，推荐使用
+>        在set方法上面
+> @Value("赋值") 等价于  <property name="xx" value="xx"/>
+> ```
+>
+> **@Autowired**（自动注入，支持byName，byType）
+>
+> 枚举确定自动装配状态：即，bean是否应该使用setter注入由Spring容器自动注入其依赖项。@Autowired默认是按照类型装配注入的。这是Spring DI的核心概念。
+>
+>  默认使用byType注入
+>
+> 语法：
+>
+> ```java
+> 
+>  @Autowired 
+> private  School school;
+> 然后对应的类加上@Component注解
+> ```
+>
+> 等价于xml注入如图：
+>
+> ![](https://i.loli.net/2020/12/01/puMFrR2TqI4axbO.png)
+>
+> **@Autowired**（byName注入） 需要配合@Qualifier("xx")注解使用
+>
+> @Autowired(required=false) ，如果我们想使用byName装配可以结合@Qualifier注解进行使用，如下：
+>
+> ```java
+> @Autowired() 
+> @Qualifier("baseDao")     
+> private BaseDao baseDao;    
+> ```
+>
+> 
+>
+> ![](https://i.loli.net/2020/12/01/VuIrxX1ycjkWCBQ.png)
+>
+> **@Resource**(jdk中的注解)
+>
+> @Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。
+>
+> ```java 
+> public class TestServiceImpl {
+>     // 下面两种@Resource只要使用一种即可
+>     @Resource(name="userDao")
+>     private UserDao userDao; // 用于字段上
+>     
+>     @Resource(name="userDao")
+>     public void setUserDao(UserDao userDao) { // 用于属性的setter方法上
+>         this.userDao = userDao;
+>     }
+> }
+> ```
+>
+> 
+>
+> @Resource装配顺序：
+>
+> ①如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常。
+>
+> ②如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常。
+>
+> ③如果指定了type，则从上下文中找到类似匹配的唯一bean进行装配，找不到或是找到多个，都会抛出异常。
+>
+> ④如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配。
+>
+> @Resource的作用相当于@Autowired，只不过@Autowired按照byType自动注入。
+>
+> ![](https://i.loli.net/2020/12/01/FtcxHmNsTQ34gq7.png)
 >
 > 
 
