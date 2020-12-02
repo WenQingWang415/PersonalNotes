@@ -378,9 +378,206 @@
 
 
 
+#### AOP面向切面编程
 
+> AOP面向切面编程是基于动态代理的，可以使用 JDK动态代理，也可以使用GGLIB动态代理
+>
+> AOP其实就是让动态代理规范化，把动态代理的实现步骤，方式都定义好了，让开发人员用一种方式，是使用动态代理
 
+##### 动态代理
 
+> - JDK动态代理（通过接口） ：实现JDK中``Proxy``，``Method``，InvocationHandler 创建代理对象
+> - GGLIB动态代理（通过继承）：第三方工具库，通过继承目标类，创建子类，子类是代理的对象，目标方法和类不能是FInal的
+>
+> 
+
+##### 术语
+
+> - Aspeot ：切面，表示增强的功能，是一堆代码，完成某个功能，不是业务代码
+>
+> 常见的切面：日志，事务，权限，统计，参数检查
+>
+> - Joinpoint：连接点，连接页面和切面的位置，就某类的业务的方法
+>
+> - PointCut：切入点，连接点方法的集合，多个方法
+>
+> - 目标对象：给那个类添加功能，这个类就是目标对象
+>
+> - Advice:通知，通知切面执行的时间
+>
+>   切面有三关键的要素
+>
+>   1. 切面的功能代码，切面能干什么
+>   2. 切面执行的位置，使用Pointout切面执行的位置
+>   3. 切面执行的时间，使用Advice表示时间，在目标方法之前，还在目标方法之前
+
+##### AOP的实现
+
+> AOP是一个规范，是动态化的一个规范，一个标准
+>
+> AOP技术实现框架：
+>
+> 1. spring :spring内部实现了AOP规范，能做AOP的工作，Spring主要在事务使用Aop，在项目中很少使用spring的AOP实现，SPring的AOP比较麻烦，笨重
+> 2. Aspectj: 是一个开源专门做AOP的框架，Spring框架中集成了Aspectj框架，通过spring就可以使用Aspectj功能
+>
+> Aspectj框架有两种实现方式：
+>
+> 1. 使用Xml方式
+>
+> 2. 使用注解方式，在项目中一般使用注解方式
+>
+>    Aspectj有五种注解：
+>
+>    1. @Before: 前置通知, 在方法执行之前执行
+>    2. @After: 后置通知, 在方法执行之后执行 。
+>    3. @AfterRunning: 返回通知, 在方法返回结果之后执行
+>    4. @AfterThrowing: 异常通知, 在方法抛出异常之后
+>    5. @Around: 环绕通知, 围绕着方法执行
+>
+> Aspectj切点表达式：
+>
+> 采用`execution`关键字定义的切点表达式格式如下：
+>
+> ```java
+> execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern)
+>                 throws-pattern?)
+> ```
+>
+> 表达式中除了返回值类型匹配规则`ret-type-pattern` (通常是 *来匹配所有返回值类型)之外的其他类型匹配规则都是可选的
+>
+> `name-pattern`方法名，可以是具体的方法名，也可以用*圈定所有方法
+>
+> `param-pattern`方法入参：`（）`匹配无参方法，`(..)`匹配多参数方法，`（*）`匹配单参数任意入参类型的方法，`(*,String)`匹配有两个入参的方法，第一个可以是任意类型，第二个必须是字符串类型。
+>
+> ```java
+> execution(public * *(..)) //匹配所有public方法
+> execution(* set*(..))//匹配所有方法名开头为set的方法
+> execution(* com.xyz.service.AccountService.*(..))//匹配AccountService下的所有方法
+> execution(* com.xyz.service.*.*(..))//匹配service包下的所有方法
+> execution(* com.xyz.service..*.*(..))//匹配service包或其子包下的所有方法
+> within(com.xyz.service.*)//匹配service包下的所有方法
+> within(com.xyz.service..*)//匹配service包或其子包下的所有方法
+> this(com.xyz.service.AccountService)//匹配所有实现了AccountService接口的类的代理类的方法（注意是代理类）
+> target(com.xyz.service.AccountService)//匹配所有实现了AccountService接口的类的方法（注意是本类）
+> args(java.io.Serializable)//匹配只有一个入参，且入参实现了Serializable接口的方法
+> @target(org.springframework.transaction.annotation.Transactional)//匹配类上标注了@Transactional注解的类中方法
+> @within(org.springframework.transaction.annotation.Transactional)//匹配运行时子类上标注了@Transactional注解的类中方法
+> @annotation(org.springframework.transaction.annotation.Transactional)//匹配所有打了@Transactional注解的方法
+> @args(com.xyz.security.Classified)//匹配只有一个入参，且运行时入参有@Classified注解的方法
+> bean(tradeService)//匹配命名为tradeService的类的方法
+> bean(*Service)//匹配命名后缀为Service的类的方法
+> ```
+>
+> Aspectj的使用步骤：
+>
+> - 引入依赖项
+>
+> ```java
+> <dependency>
+>     <groupId>org.springframework</groupId>
+>     <artifactId>spring-aspects</artifactId>
+>     <version>5.3.1</version>
+> </dependency>
+> ```
+>
+> - 创建目标类和实现类：给类中的方法添加功能
+>
+> ```java
+> //接口：
+>     public interface Some01 {
+>     void  some(String name,int age);
+> }
+> //实现类： 
+> //目标类
+> /**
+> *@Component 不需要写xml
+> */
+> @Component
+> public class Some01Impl implements Some01 {
+>     @Override
+>     public void some(String name, int age) {
+>         System.out.println("=========目标执行方法some()========");
+>     }
+> }
+> ```
+>
+> - 创建切面的普通类
+>
+>   1. 在类上添加 @Aspect
+>
+>   2. 在类中定义方法，方法就是切面要执行的功能代码
+>
+>      在方法上面添加Aspect注解的通知注解
+>
+>      ```java
+>      /**
+>       * @Aspect 是Aspectj中的注解
+>       * 作用：表示当前是切面类
+>       * 切面类：是给业务类方法添加功能，在这个中有切面的功能代码
+>       */
+>      @Component
+>      @Aspect
+>      public class myAspectj {
+>          /**
+>           * 定义方法：方法实现切面功能
+>           * 方法定义的要求：
+>           * 1.公共方法：public
+>           * 2.方法没有返回值
+>           * 3.方法名称自定义
+>           * 4.方法可以有参数，也可以没有参数
+>           *   如果有参数，参数不是自定义的，有几个参数类型可以使用
+>           *
+>           */
+>          /**
+>           * @Before: 前置通知
+>           * 属性：value，是切入点表达式，表示切面执行的位置
+>           * 位置：在方法的上面添加
+>           * 特点：
+>           * 1.在目标方法之前执行
+>           * 2.不会改变目标的执行结果
+>           * 3.不影响目标方法的执行
+>           */
+>          @Before(value ="execution(public void  com.spring.wenqingwang.service.be01.Some01Impl.some(String,int))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>      ```
+>
+> - 创建spring配置文件:声明对象，把对象交个容器统一管理，声明对象可以使用注解或者xml文件<bean/>
+>
+>   1. 声明目标对象
+>   2. 声明切面对象
+>   3. 声明Aspectj框架中自动代理生成器标签
+>
+>   ```java
+>     <!--声明组件扫描器-->
+>   <context:component-scan base-package="com.spring.wenqingwang.service.be01"/>
+>       <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
+>       创建目标代理对象是在内存中实现的，修改目标对象在内存的结构，创建为代理对象，所以目标对象是修改后的代理对象
+>       aspectj-autoproxy 会把spring容器中的所有的目标对象，一次性都生成代理对象-->
+>       <aop:aspectj-autoproxy/>
+>   ```
+>
+>   如图：
+>
+>   ![](https://i.loli.net/2020/12/02/Mfv4IgnAXtuN9do.png)
+>
+> - 测试
+>
+>   ```java
+>   @Test
+>       public  void  test02(){
+>           String path="zhujie.xml";
+>           ApplicationContext applicationContext=new ClassPathXmlApplicationContext(path);
+>           //从容中获取目标对象
+>            Some01 some01ome01= (Some01) applicationContext.getBean("some01Impl");
+>            //通过代理对象执行方法，实现目标方法执行时，增强功能
+>           some01ome01.some("www",20 );
+>       }
+>   ```
+>
+>   
 
 
 
