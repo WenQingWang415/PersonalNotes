@@ -215,25 +215,26 @@
 >     </bean>
 > ```
 >
-> byType（按类型注入）
->
+
+##### byType（按类型注入）
+
 > Java引用类型的数据类型和spring容器中（配置文件）bean 的class是同源关系，这样得可以赋值引用类型
 >
 > 1. java类中引用类型的数据类型和bean的class的值一样
-> 2. java类中引用类型的数据类型和bean的class是父子类关系
-> 3. java类中引用类型的数据类型bean的class值接口和实现关系
->
-> 提醒：在byType中，在XMl配置文件中声明bean只能有一个符合条件的，多余一个就是错误的
->
-> ```java
-> <bean id="mystudent" class="com.spring.wenqingwang.po.student" autowire="byType">
->         <property name="age" value="21"/>
->         <property name="name" value="www"/>
->     </bean>
+>  2. java类中引用类型的数据类型和bean的class是父子类关系
+>    3. java类中引用类型的数据类型bean的class值接口和实现关系
+>    
+>    提醒：在byType中，在XMl配置文件中声明bean只能有一个符合条件的，多余一个就是错误的
+>    
+>    ```java
+>    <bean id="mystudent" class="com.spring.wenqingwang.po.student" autowire="byType">
+>            <property name="age" value="21"/>
+>            <property name="name" value="www"/>
+>        </bean>
 >     <bean id="myschol" class="com.spring.wenqingwang.po.School">
->         <property name="name" value="清大学"/>
+>        <property name="name" value="清大学"/>
 >         <property name="address" value="北京"/>
->     </bean>
+>    </bean>
 > ```
 
 #### 包含配置文件
@@ -272,27 +273,30 @@
 > <context:component-scan base-package="指定你注解的包名的上一级"/>
 > ```
 >
-> **@Component**
->
+
+#####@Component
+
 > ```java
-> @Component
+>@Component
 > public class student {
-> }
+>}
 > @Component(value = "mystudent") 等价于<bean id="mystudent" class="xx"/>
-> 可以简写：@Component("mystudent") //比较常用
+>可以简写：@Component("mystudent") //比较常用
 > 可以省略：@Component 不指定名称，由spring提供默认名称，类名首字母小写
-> 然后指定扫描包路径
+>然后指定扫描包路径
 > <context:component-scan base-package="指定你注解的包名"/>
 > ```
->
+> 
 > spring中和@Component注解功能一致的创建对象还有：
->
+> 
 > - @Repository（持久层） ：放在dao的实现类上面，表示创建dao对象，dao对象是访问数据库的。
 > - @Service（业务层）：放在Service的实现类上面，创建Service对象，Service对象就是做业务处理，可以有事务功能等
 > - @Controller（控制层）：放在Controller的控制器类上面，创建Controller对象，能够接受用户的处理参数，返回的结果
 >
-> **@Value**
->
+> 
+
+##### @Value
+
 > 语法：
 >
 > ```java 
@@ -308,8 +312,11 @@
 > @Value("赋值") 等价于  <property name="xx" value="xx"/>
 > ```
 >
-> **@Autowired**（自动注入，支持byName，byType）
->
+
+
+
+#####@Autowired（自动注入，支持byName，byType）
+
 > 枚举确定自动装配状态：即，bean是否应该使用setter注入由Spring容器自动注入其依赖项。@Autowired默认是按照类型装配注入的。这是Spring DI的核心概念。
 >
 >  默认使用byType注入
@@ -317,7 +324,6 @@
 > 语法：
 >
 > ```java
-> 
 >  @Autowired 
 > private  School school;
 > 然后对应的类加上@Component注解
@@ -326,9 +332,9 @@
 > 等价于xml注入如图：
 >
 > ![](https://i.loli.net/2020/12/01/puMFrR2TqI4axbO.png)
->
-> **@Autowired**（byName注入） 需要配合@Qualifier("xx")注解使用
->
+
+#####@Autowired（byName注入） 需要配合@Qualifier("xx")注解使用
+
 > @Autowired(required=false) ，如果我们想使用byName装配可以结合@Qualifier注解进行使用，如下：
 >
 > ```java
@@ -340,9 +346,9 @@
 > 
 >
 > ![](https://i.loli.net/2020/12/01/VuIrxX1ycjkWCBQ.png)
->
-> **@Resource**(jdk中的注解)
->
+
+#####@Resource(jdk中的注解)
+
 > @Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。
 >
 > ```java 
@@ -373,10 +379,6 @@
 > @Resource的作用相当于@Autowired，只不过@Autowired按照byType自动注入。
 >
 > ![](https://i.loli.net/2020/12/01/FtcxHmNsTQ34gq7.png)
->
-> 
-
-
 
 #### AOP面向切面编程
 
@@ -414,14 +416,15 @@
 ##### AOP的实现
 
 > AOP是一个规范，是动态化的一个规范，一个标准
->
-> AOP技术实现框架：
->
+
+#####AOP技术实现框架：
+
 > 1. spring :spring内部实现了AOP规范，能做AOP的工作，Spring主要在事务使用Aop，在项目中很少使用spring的AOP实现，SPring的AOP比较麻烦，笨重
-> 2. Aspectj: 是一个开源专门做AOP的框架，Spring框架中集成了Aspectj框架，通过spring就可以使用Aspectj功能
 >
-> Aspectj框架有两种实现方式：
->
+> 2.Aspectj: 是一个开源专门做AOP的框架，Spring框架中集成了Aspectj框架，通过spring就可以使用Aspectj功能
+
+#####Aspectj框架有两种实现方式：
+
 > 1. 使用Xml方式
 >
 > 2. 使用注解方式，在项目中一般使用注解方式
@@ -433,9 +436,9 @@
 >    3. @AfterRunning: 返回通知, 在方法返回结果之后执行
 >    4. @AfterThrowing: 异常通知, 在方法抛出异常之后
 >    5. @Around: 环绕通知, 围绕着方法执行
->
-> Aspectj切点表达式：
->
+
+##### Aspectj切点表达式：
+
 > 采用`execution`关键字定义的切点表达式格式如下：
 >
 > ```java
@@ -467,9 +470,11 @@
 > bean(tradeService)//匹配命名为tradeService的类的方法
 > bean(*Service)//匹配命名后缀为Service的类的方法
 > ```
->
-> Aspectj的使用步骤：
->
+
+
+
+#####Aspectj的使用步骤：
+
 > - 引入依赖项
 >
 > ```java
@@ -542,6 +547,42 @@
 >              //就是切面要执行的功能代码
 >              System.out.println("切面功能，在目标方法之前输出执行时间"+new Date());
 >          }
+>          =================================分割简写方式如下=====================
+>          @Before(value ="execution( void  com.spring.wenqingwang.service.be01.Some01Impl.some(String,int))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>           =================================分割简写方式如下=====================
+>          @Before(value ="execution( void  *..Some01Impl.some(String,int))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("03s切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>            =================================分割简写方式如下=====================
+>          @Before(value ="execution( void  *..Some01Impl.some(..))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("04切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>           =================================分割简写方式如下=====================
+>           @Before(value ="execution( *  *..Some01Impl.some(..))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("05切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>           =================================分割简写方式如下=====================
+>          @Before(value ="execution( *  *..Some01Impl.so*(..))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("06切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
+>           =================================分割简写方式如下=====================
+>          @Before(value ="execution( *  so*(..))")
+>          public  void myBefore(){
+>              //就是切面要执行的功能代码
+>              System.out.println("07切面功能，在目标方法之前输出执行时间"+new Date());
+>          }
 >      ```
 >
 > - 创建spring配置文件:声明对象，把对象交个容器统一管理，声明对象可以使用注解或者xml文件<bean/>
@@ -561,7 +602,7 @@
 >
 >   如图：
 >
->   ![](https://i.loli.net/2020/12/02/Mfv4IgnAXtuN9do.png)
+>   ![](https://i.loli.net/2020/12/02/scrieb8GpWX6JS1.png)
 >
 > - 测试
 >
@@ -577,9 +618,414 @@
 >       }
 >   ```
 >
->   
+> 
+>
+> 
+
+#####Joinpoint通知方法中的参数：
+
+==所有的通知都可使用JoinPoint 必须是第一个位置的参数==
+
+> ```
+> /**
+>      * 指定通知中的参数：JoinPoint
+>      * JoinPoint：业务方法，添加要切入的功能的业务方法
+>      * 作用：可以在通知方法获取执行时的信息，列如方法名称，方法的实参，
+>      * 如果方法要使用到方法信息就加入JoinPoint
+>      * 这个JoinPoint参数是由框架赋予的，必须是第一个位置的参数
+>      *
+>      */
+>     @Before(value ="execution( void  *..Some01Impl.some(..))")
+>     public  void myBefore(JoinPoint joinPoint){
+>         //获取方法的完整定义
+>         System.out.println("方法的签名（定义）"+joinPoint.getSignature());
+>         System.out.println("方法的名称="+joinPoint.getSignature().getName());
+>         //获取实参
+>         Object a []=joinPoint.getArgs();
+>         for (Object as:a){
+>             System.out.println("参数"+as);
+>         }
+>         //就是切面要执行的功能代码
+>         System.out.println("07切面功能，在目标方法之前输出执行时间"+new Date());
+>     }
+> ```
 
 
+
+#####后置通知 @AfterRunning
+
+>  声明接口
+>
+> ```java
+> public interface dosome {
+>     String some(String name,int age);
+> }
+> ```
+>
+> 实现接口
+>
+> ```java
+> @Component
+> public class dosomeImpl implements dosome {
+>     @Override
+>     public String some(String name, int age) {
+>         System.out.println("==========SOme目标后通知===========");
+>         return "ADCDEFG";
+>     }
+> }
+> ```
+>
+> 写切面
+>
+> ```java
+> @Component
+> @Aspect
+> public class MyAfterRunning {
+>     /***
+>      * 后置通知定义实现方法
+>      * 方法定义的要求：
+>      *      * 1.公共方法：public
+>      *      * 2.方法没有返回值
+>      *      * 3.方法名称自定义
+>      *      * 4.方法有参数的 参数推荐使用Object
+>      * @param res
+>      */
+>     /***
+>      * @AfterReturning后置通知
+>      * 属性：value：切入点表达式
+>      *      returning 自定义变量，表示目标方法的返回值
+>      *      自定义的变量必须和通知方法的形参名一样
+>      * 特点：
+>      * 1.在目标方法之后执行的
+>      * 2.能够获取目标的返回值，可以根据这个返回值处理不同的功能
+>      * 3.可以修改返回值
+>      * @param res
+>      */
+>     @AfterReturning(value = "execution(* *..dosomeImpl.some(..))",returning = "res")
+>     public  void  myafterRunning(Object res){
+>         //Object res 是目标执行后的返回值，根据返回值做切面功能的处理
+>         System.out.println("后置通知，在方法后通知"+res);
+>     }
+> }
+> ```
+>
+> xml扫描组件
+>
+> ```java
+> <!--声明组件扫描器-->
+> <context:component-scan base-package="com.spring.wenqingwang.service.be02"/>
+> <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
+> 创建目标代理对象是在内存中实现的，修改目标对象在内存的结构，创建为代理对象，所以目标对象是修改后的代理对象
+> aspectj-autoproxy 会把spring容器中的所有的目标对象，一次性都生成代理对象-->
+> <aop:aspectj-autoproxy/>
+> ```
+>
+> 然后进行测试
+>
+> ```java
+> @Test
+> public  void  test02(){
+>     String path="zhujie.xml";
+>     ApplicationContext applicationContext=new ClassPathXmlApplicationContext(path);
+>     //从容中获取目标对象
+>      dosome peoxy= (dosome) applicationContext.getBean("dosomeImpl");
+>  String str=peoxy.some("wwwq",25);
+>     System.out.println(str);
+> }
+> ```
+>
+> ![image.png](https://i.loli.net/2020/12/02/XVDN9LhdkzruHCi.png)
+>
+> 
+>
+
+##### 环绕通知 @Around
+
+> 声明接口
+>
+> ```java
+> public interface Some03 {
+>     String some(String name,int age);
+> }
+> 
+> ```
+>
+> 声明目标类
+>
+> ```java
+> @Component
+> public class Some03Impl implements Some03 {
+>     @Override
+>     public String some(String name, int age) {
+>         System.out.println("环绕通知执行了");
+>         return "就这";
+>     }
+> }
+> 
+> ```
+>
+> 写切面
+>
+> ```java
+> @Component
+> @Aspect
+> public class Myaspct {
+>     /**
+>      * 环绕通知方法定义格式
+>      * 1.public
+>      * 2.必须有一个返回值 推荐使用Object
+>      * 3.方法名称自定义
+>      * 4.方法有参数，固定参数ProceedingJoinPoint
+>      */
+>     /**
+>      * @Around :环绕通知
+>      * 属性：value 切入点表达式
+>      * 特点：
+>      * 1.功能最强的通知
+>      * 2.在目标方法前后都能增强功能
+>      * 3.控制目标方法是否被调用执行
+>      * 4.修改原来的目标方法执行结果，影响最后的调用结果
+>      * 环绕通知，等同于jdk动态代理的InvocationHandler
+>      * 参数：ProceedingJoinPoint 等同于jdk动态代理的``Method``
+>      * 作用：执行目标方法
+>      * 返回值：目标返回的结果，可以被修改
+>      *
+>      * 环绕通知做的最多就是事务
+>      */
+>     @Around(value = "execution(* *..Some03Impl.some(..))")
+>     public Object MyAuround(ProceedingJoinPoint point) throws Throwable {
+>         Object object = null;
+>         String name = null;
+>         Object args[] = point.getArgs();
+>         if (args != null) {
+>             Object agr = args[0];
+>             name = (String) agr;
+>         }
+>         System.out.println("环绕通知：在目标方法之前，输出时间" + new Date());
+>         //1.目标方法的调用 object 目标返回的结果
+>          //控制目标方法是否被调用执行
+>         if (name.equals("wwwq")) {
+>             object = point.proceed();//Method.invoke();
+>         }
+>         System.out.println("环绕通知：在目标方法之后，提交事务");
+>         //在目标方法的前或者后加入功能
+>         //修改返回结果
+>         if (object!=null){
+>             object="wang";
+>         }
+>         //返回通知
+>         return object;
+> 
+>     }
+> }
+> 
+> ```
+>
+> xml扫描组件
+>
+> ```java
+> <!--声明组件扫描器-->
+>     <context:component-scan base-package="com.spring.wenqingwang.service.be03"/>
+>     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
+>     创建目标代理对象是在内存中实现的，修改目标对象在内存的结构，创建为代理对象，所以目标对象是修改后的代理对象
+>     aspectj-autoproxy 会把spring容器中的所有的目标对象，一次性都生成代理对象-->
+>     <aop:aspectj-autoproxy/>
+> ```
+>
+> 测试：
+>
+> ```java
+>  @Test
+>     public  void  test02(){
+>         String path="zhujie.xml";
+>         ApplicationContext applicationContext=new ClassPathXmlApplicationContext(path);
+>         //从容中获取目标对象
+>         Some03 peoxy= (Some03) applicationContext.getBean("some03Impl");
+>      String str=peoxy.some("wwwq",25);
+>         System.out.println(str);
+>     }
+> ```
+
+##### 异常通知@AfterThrowing（了解即可）
+
+>  声明接口
+>
+> ```java
+> void  dosene();
+> ```
+>
+> 声明目标实现类
+>
+> ```java
+> @Override
+>     public void dosene() {
+>         System.out.println("异常通知"+1/0);
+>     }
+> ```
+>
+> 切面
+>
+> ```java
+> @Component
+> @Aspect
+> public class Myaspct {
+>     /**
+>      * 异常通知方法定义格式
+>      * 1.public
+>      * 2.没有返回值
+>      * 3.方法名称自定义
+>      * 4.方法有一个Exception，如果还要有的话就是JoinPoint
+>      *
+>      */
+>     /**
+>      * @AfterThrowing:异常通知 属性：
+>      * value 切入点表达式
+>      * throwing：自定义变量，表示目标方法抛出的异常对象
+>      * 变量名必须和方法名一样
+>      * 特点：
+>      * 1.在目标方法抛出异常是执行的
+>      * 2.可以做异常的监控程序，监控目标方法执行是不是有异常，如果有异常可以可以发送邮件，短信进行通知
+>      */
+>     @AfterThrowing(value = "execution(* *..Some03Impl.dosene(..))", throwing = "e")
+>     public void yichang(Exception e) {
+>         System.out.println("异常通知：在方法发生异常是通知");
+>     }
+> }
+> 
+> ```
+>
+> xml配置
+>
+> ```java
+>   <!--声明组件扫描器-->
+>     <context:component-scan base-package="com.spring.wenqingwang.service.be04"/>
+>     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
+>     创建目标代理对象是在内存中实现的，修改目标对象在内存的结构，创建为代理对象，所以目标对象是修改后的代理对象
+>     aspectj-autoproxy 会把spring容器中的所有的目标对象，一次性都生成代理对象-->
+>     <aop:aspectj-autoproxy/>
+> ```
+>
+> 测试
+>
+> ```java
+> @Test
+>     public  void  test02(){
+>         String path="zhujie.xml";
+>         ApplicationContext applicationContext=new ClassPathXmlApplicationContext(path);
+>         //从容中获取目标对象
+>         Some03 peoxy= (Some03) applicationContext.getBean("some03Impl");
+>         peoxy.dosene();
+>     }
+> ```
+
+##### 最终通知@After（了解即可）
+
+> 接口
+>
+> ```java
+>  void doAfter();
+> ```
+>
+> 目标实现类
+>
+> ```java
+>  @Override
+>     public void doAfter() {
+>         System.out.println("最终通知"+1/0);
+>     }
+> ```
+>
+> 切面
+>
+> ```java
+> @Component
+> @Aspect
+> public class Myaspct {
+>     /**
+>      * 异常通知方法定义格式
+>      * 1.public
+>      * 2.没有返回值
+>      * 3.方法名称自定义
+>      * 4.方法没有参数，如果还要有的话就是JoinPoint
+>      *
+>      */
+>     /**
+>      * @After ：最终通知
+>      * 属性：
+>      * value 切入点表达式
+>      * 特点：
+>      * 1.在目标方法之后执行
+>      * 2.总会执行
+>      *一般做内存清除
+>      */
+>     @After(value = "execution(* *..Some03Impl.doAfter(..))")
+>     public  void dovAfter(){
+>     System.out.println("切面执行了");
+> }
+> }
+> 
+> ```
+>
+> xml扫描器
+>
+> ```java
+> <!--声明组件扫描器-->
+>     <context:component-scan base-package="com.spring.wenqingwang.service.be05"/>
+>     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
+>     创建目标代理对象是在内存中实现的，修改目标对象在内存的结构，创建为代理对象，所以目标对象是修改后的代理对象
+>     aspectj-autoproxy 会把spring容器中的所有的目标对象，一次性都生成代理对象-->
+>     <aop:aspectj-autoproxy/>
+> ```
+>
+> 测试
+>
+> ```java
+> @Test
+>     public  void  test02(){
+>         String path="zhujie.xml";
+>         ApplicationContext applicationContext=new ClassPathXmlApplicationContext(path);
+>         //从容中获取目标对象
+>         Some03 peoxy= (Some03) applicationContext.getBean("some03Impl");
+>         peoxy.doAfter();
+>     }
+> ```
+
+
+
+##### PointCut 的注解
+
+> ```java
+> @Component
+> @Aspect
+> public class Myaspct {
+> 
+>     @After(value = "mypt()")
+>     public  void dovAfter(){
+>     System.out.println("在方法后执行了");
+> }
+>     @Before(value = "mypt()")
+>     public  void dovbfter(){
+>         System.out.println("在方法前执行了");
+>     }
+> /***
+>  * @Pointcut:定义和管理切入点，如果项目中有多个切入点是重复的，可以复用的可以使用 @Pointcut
+>  * 属性：value 切入点表达式
+>  * 特点：当使用@Pointcut定义在一个方法上面，此方法的名称是切入点表达式的别名
+>  * 其他的通知中，value属性就可以使用方法名称，代替切入点表达式
+>  */
+> @Pointcut(value = "execution(* *..Some03Impl.doAfter(..))")
+> public  void mypt(){
+>     //不需要代码
+> }
+> ```
+
+##### 使用Cglib代理
+
+> ```java
+> <!--如果你是的期望是Cglib代理 expose-proxy="true" 告诉框架使用Cglib代理-->
+>     <aop:aspectj-autoproxy expose-proxy="true"/>
+>  //没有接口是cglib代理
+> ```
 
 
 
