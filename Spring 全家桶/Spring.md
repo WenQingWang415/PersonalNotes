@@ -1044,7 +1044,101 @@
 
 > 涉及到多个表或者多个SQL语句，保证这些语句成功，保证操作都符合要求
 
+##### Spring声明式事务
 
+> 把事物相关的资源和内容都提供给spring，spring就可以处理事务的提交和回滚
+>
+> 1. 事务内部提交，回滚事务，使用的事务管理器对象，代替你完成commit，rollback
+>
+>    事务管理器是一个接口和他众多的实现类
+>
+>    接口：PlatformTransactionManager  定义了事务的重要方法：commit，rollback
+>
+>    实现类：spring把每一种数据库访问技术对应的事务处理类都创建好
+>
+>    ​                 mybatis访问数据库---spring创建的事务[DataSourceTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/datasource/DataSourceTransactionManager.html)
+>
+>    ​                Hibernate访问数据库---spring创建事务[HibernateTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/hibernate5/HibernateTransactionManager.html)
+
+##### 控制事务的三个方面
+
+###### 事务的隔离级别：
+
+> [ISOLATION_DEFAULT](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_DEFAULT)：PlatfromTransactionManager默认的事务隔离级别。mySQL为[ISOLATION_REPEATABLE_READ](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_REPEATABLE_READ)，oracle为[ISOLATION_READ_COMMITTED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_READ_COMMITTED)
+>
+> [ISOLATION_READ_COMMITTED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_READ_COMMITTED)：读已提交，解决脏读，存在不可重复读和幻读
+>
+> [ISOLATION_READ_UNCOMMITTED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_READ_UNCOMMITTED)：最低的隔离级别，读未提交，未解决任何并发的问题
+>
+> [ISOLATION_REPEATABLE_READ](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_REPEATABLE_READ)：可重复读，解决脏读，不可重复读，存在幻读
+>
+> [ISOLATION_SERIALIZABLE](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#ISOLATION_SERIALIZABLE)：串行化，不存在并发问题
+>
+> 关键词：
+>
+> 1. 脏读：脏读是指当一个事务在访问数据时，并且对数据进行了修改，而这种修改还没有存在数据库中，这时，另一个事务访问这个数据，然后使用这个数据
+> 2. 不可重复读：是指一个事务内，多次读同一条数据，但是这个事务还木结束是，另一个事务也访问同一数据，么，在第一个事务中的两 次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不 可重复读。
+> 3. 幻读：是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。 同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象 发生了幻觉一样。例如，一个编辑人员更改作者提交的文档，但当生产部门将其更改内容合并到该文档的主复本时，发现作者已将未编辑的新材料添加到该文档中。 如果在编辑人员和生产部门完成对原始文档的处理之前，任何人都不能将新材料添加到文档中，则可以避免该问题。
+
+###### 事务的的超时时间：
+
+> [TIMEOUT_DEFAULT](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#TIMEOUT_DEFAULT)表示一个方法最长的执行时间，如果方法执行是超过时间，事务就回滚，单位为秒，默认是-1 。一般都是默认即可
+
+###### 事务的传播行为：
+
+> 控制业务是不是有事务，是什么样的事务
+>
+> 7个传播行为，表示你的业务方法调用时，事务在方法之间是如何使用的
+>
+> [PROPAGATION_REQUIRED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_REQUIRED)：
+>
+> 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务。 这种传播行为最长见，是spring的默认传播行为
+>
+> [PROPAGATION_REQUIRES_NEW](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_REQUIRES_NEW)：
+>
+> 总是开启一个新的事务。如果一个事务已经存在，则将这个存在的事务挂起。
+>
+> [PROPAGATION_SUPPORTS](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_SUPPORTS):
+>
+> 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行。
+>
+> ------
+>
+> 以上三种经常使用
+>
+> [PROPAGATION_MANDATORY](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_MANDATORY)：
+>
+> 级别的事务要求上下文中必须要存在事务，否则就会抛出异常！配置该方式的传播级别是有效的控制上下文调用代码遗漏添加事务控制的保证手段。比如一段代码不能单独被调用执行，但是一旦被调用，就必须有事务包含的情况，就可以使用这个传播级别。
+>
+> [PROPAGATION_NESTED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_NESTED)：
+>
+> 如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务, 则按TransactionDefinition.PROPAGATION_REQUIRED 属性执行
+>
+> 事务是逻辑处理原子性的保证手段，通过使用事务控制，可以极大的避免出现逻辑处理失败导致的脏数据等问题。
+>
+> 事务最重要的两个特性，是事务的传播级别和数据隔离级别。传播级别定义的是事务的控制范围，事务隔离级别定义的是事务在数据库读写方面的控制范围。
+>
+> [PROPAGATION_NEVER](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_NEVER)：
+>
+> 该事务更严格，上面一个事务传播级别只是不支持而已，有事务就挂起，而PROPAGATION_NEVER传播级别要求上下文中不能存在事务，一旦有事务，就抛出runtime异常，强制停止执行！这个级别上辈子跟事务有仇。
+>
+> [PROPAGATION_NOT_SUPPORTED](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/TransactionDefinition.html#PROPAGATION_NOT_SUPPORTED)：
+>
+> 这个也可以从字面得知，not supported ，不支持，当前级别的特点就是上下文中存在事务，则挂起事务，执行当前逻辑，结束后恢复上下文的事务。
+>
+> 这个级别有什么好处？可以帮助你将事务极可能的缩小。我们知道一个事务越大，它存在的风险也就越多。所以在处理事务的过程中，要保证尽可能的缩小范围。比如一段代码，是每次逻辑操作都必须调用的，比如循环1000次的某个非核心业务逻辑操作。这样的代码如果包在事务中，势必造成事务太大，导致出现一些难以考虑周全的异常情况。所以这个事务这个级别的传播级别就派上用场了。用当前级别的事务模板抱起来就可以了。
+
+##### 事务提交事务，回滚事务的时机
+
+> 1. 当你的业务方法，执行成功，没有抛出异常，当方法执行完毕，spring在方法执行后提交方法 ，事务管理器commit
+>
+> 2. 当你的业务方法抛出运行时异常或者ERROR的时候，spring执行回滚，事务管理器rollback
+>
+>    运行时异常的定义：RuntimeException 和他子类运行是的异常，列如：NullPoinException等异常
+>
+> 3. 当你的业务方法抛出非运行时异常，主要是受查异常时，提交事务。
+>
+>    受查异常：在你写代码中，必须处理的异常，例如：IOException，SQLException
 
 
 
