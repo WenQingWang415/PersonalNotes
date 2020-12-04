@@ -1140,5 +1140,81 @@
 >
 >    受查异常：在你写代码中，必须处理的异常，例如：IOException，SQLException
 
+##### Spring框架提供的事务处理方案
+
+###### 1.Sping 框架自己使用的aop实现事务的功能，使用@Transactional注解注解
+
+> @Transactional注解是spring框架的自己的注解，表示当前方法有事务
+>
+> 可以给事务添加属性值：
+>
+> [属性看api](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html)
+>
+> | `Isolation`                    | `isolation`事务隔离级别。                                    |
+> | ------------------------------ | ------------------------------------------------------------ |
+> | `String[]`                     | `label`定义零（0）个或更多交易标签。                         |
+> | `Class<? extends Throwable>[]` | `noRollbackFor`定义零（0）或更多异常[`Classes`](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true)，该异常必须是的子类[`Throwable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true)，指示哪些异常类型一定 **不会**导致事务回滚。 |
+> | `String[]`                     | `noRollbackForClassName`定义零（0）个或更多异常名称（对于必须是的子类的[`Throwable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true)异常），指示哪些异常类型一定**不会** 导致事务回滚。 |
+> | `Propagation`                  | `propagation`事务传播类型。                                  |
+> | `boolean`                      | `readOnly        ``true`如果事务实际上是只读的，则可以设置为布尔标志，以允许在运行时进行相应的优化。 |
+> | `Class<? extends Throwable>[]` | `rollbackFor`定义零（0）或更多异常[`classes`](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true)，该异常必须是的子类[`Throwable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true)，指示必须导致事务回滚的异常类型。 |
+> | `String[]`                     | `rollbackForClassName`定义零（0）个或多个异常名称（对于必须是的子类的[`Throwable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true)异常），指示哪些异常类型必须引起事务回滚。 |
+> | `int`                          | `timeout`此事务的超时时间（以秒为单位）。                    |
+> | `String`                       | `timeoutString`此事务的超时时间（以秒为单位）。              |
+> | `String`                       | `transactionManager`一个*限定*为特定交易价值。               |
+> | `String`                       | `value`的别名[`transactionManager()`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html#transactionManager--)。 |
+>
+> Spring使用事务的步骤：
+>
+> ```java
+>     <!-- 1.使用spring的事务处理事务-->
+>     <!--声明事务管理器-->
+>     <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+>         <!--连接数据源-->
+>         <property name="dataSource" ref="myDataSource"/>
+>     </bean>
+>     <!--2.开启事务注解驱动，告诉spring使用注解管理事务，创建管理对象，
+>     事务管理器使用的是aop的环绕通知 @Around
+>         http://www.springframework.org/schema/tx
+>     -->
+>     <tx:annotation-driven transaction-manager="transactionManager"/>
+>    <!--3.在Service层的public上添加注解@Transactional-->
+> ```
+
+###### 2.Aspectj aop实现
+
+> 在大型项目中有很多类，方法，需要大量的配置事务，使用Aspectj框架实现，在spring配置中，声明类，方法所需要的事务，这种方法业务代码和事务完全分离
+
+###### 事项步骤：
+
+1. 引入依赖
+
+   ```java
+   <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-aspects</artifactId>
+       <version>5.3.1</version>
+   </dependency>
+   ```
+
+   
+
+2. 声明事务管理器
+
+   ```java
+   <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+           <!--连接数据源-->
+           <property name="dataSource" ref="myDataSource"/>
+       </bean>
+   ```
+
+   
+
+3. 声明方法需要的事务类型（ ）
+
+   
+
+4. 配置Aop：指定是那些类，要创建代理
+
 
 

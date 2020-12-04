@@ -145,7 +145,7 @@ Java 语言既具有编译型语言的特征，也具有解释型语言的特征
 
    idea设置注释颜色
 
-![](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200916093210939.png)
+![](https://i.loli.net/2020/12/04/yU1BcW2Qoj5AfNT.png)
 
 
 
