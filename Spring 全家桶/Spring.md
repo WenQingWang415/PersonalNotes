@@ -1185,36 +1185,75 @@
 
 > 在大型项目中有很多类，方法，需要大量的配置事务，使用Aspectj框架实现，在spring配置中，声明类，方法所需要的事务，这种方法业务代码和事务完全分离
 
-###### 事项步骤：
+###### 配置步骤：
 
 1. 引入依赖
 
-   ```java
-   <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-aspects</artifactId>
-       <version>5.3.1</version>
-   </dependency>
-   ```
+   > ```java
+   > <dependency>
+   >     <groupId>org.springframework</groupId>
+   >     <artifactId>spring-aspects</artifactId>
+   >     <version>5.3.1</version>
+   > </dependency>
+   > ```
 
    
 
 2. 声明事务管理器
 
-   ```java
-   <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-           <!--连接数据源-->
-           <property name="dataSource" ref="myDataSource"/>
-       </bean>
-   ```
+   > ```java
+   > <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   >         <!--连接数据源-->
+   >         <property name="dataSource" ref="myDataSource"/>
+   >     </bean>
+   > ```
 
    
 
-3. 声明方法需要的事务类型（ ）
+3. 声明方法需要的事务类型（ 【传播行为，隔离级别，超时】）
+
+   > ```java
+   >  <!-- 1.使用spring的事务处理事务-->
+   >     <!--声明事务管理器-->
+   >     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   >         <!--连接数据源-->
+   >         <property name="dataSource" ref="myDataSource"/>
+   >     </bean>
+   >     <!-- 2.声明业务方法他的事务属性【传播行为，隔离级别，超时】
+   >     id:自定义名称，表示<tx:advic>和</tx:advice>之间的配置内容
+   >     transaction-manager：事务管理器对象id
+   >     -->
+   >     <tx:advice id="interceptor" transaction-manager="transactionManager">
+   >         <!--tx:attributes:配置事务的属性-->
+   >         <tx:attributes>
+   >             <!--tx:method:给具体的方法配置属性，method可以有多个，分别给不同的方法设置属性
+   >             name:方法名称 ,1）完整的方法名称，不带有包和类
+   >                          2）方法可以使用通配符 *表示任意字符
+   >             propagation：传播行为，枚举值
+   >             isolation： 隔离级别
+   >             rollback-for：指定的异常类名 ， 全限定类名，发生异常一定回滚
+   >             -->
+   >             <tx:method name="buy" isolation="DEFAULT" propagation="REQUIRED"
+   >                        rollback-for="java.lang.NullPointerException,com.spring.wenqingwang.excep.Notenoughexception"/>
+   >             <!-- 使用通配符，指定很多方法 add 开头的都指定-->
+   >             <!--<tx:method name="add*" isolation="DEFAULT"/>-->
+   >         </tx:attributes>
+   >     </tx:advice>
+   >     <!--3.配置aop-->
+   >     <aop:config>
+   >         <!--配置切入点表达式：指定那些包中类，使用事务
+   >         id：切入点表达式的唯一值
+   >         expression：切入点表达式，指定哪些类使用事务，aspectj会创建代理对象
+   >         -->
+   >         <aop:pointcut id="servicept" expression="execution(* *..service..*.*(..))"/>
+   >         <!--配置增强器：关联advice和pointcut-->
+   >         <aop:advisor advice-ref="interceptor" pointcut-ref="servicept"/>
+   >     </aop:config>
+   > ```
 
    
 
-4. 配置Aop：指定是那些类，要创建代理
+   
 
 
 
