@@ -31,41 +31,62 @@
 > ```java
 > //创建接口
 > public interface Someservice {
->     void  sode();
+> void  sode();
 > }
 > ```
 >
->   ```java 
+> ```java 
 > //实现接口
 > public class SomeserviceIMp  implements   Someservice{
->     @Override
->     public void sode() {
->         System.out.println("打印");
->     }
+> @Override
+> public void sode() {
+>   System.out.println("打印");
 > }
->   ```
+> }
+> ```
 >
 > 2.创建配置文件
 >
 > ```java
 > <?xml version="1.0" encoding="UTF-8"?>
 > <beans xmlns="http://www.springframework.org/schema/beans"
->        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->        xsi:schemaLocation="http://www.springframework.org/schema/beans
->        http://www.springframework.org/schema/beans/spring-beans.xsd">
->     <!--告诉spring创建对象，其实申明bean标签-->
->     <!--ID 是唯一的值，class 只能是类不能是接口，因为需要反射-->
->     <bean id="somecervice" class="com.spring.wenqingwang.service.imp.SomeserviceIMp"></bean>
->      <!--spring可以创建非自定义对象-->
->     <bean id="mydate" class="java.util.Date"/>
+>  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>  xsi:schemaLocation="http://www.springframework.org/schema/beans
+>  http://www.springframework.org/schema/beans/spring-beans.xsd">
+> <!--告诉spring创建对象，其实申明bean标签-->
+> <!--ID 是唯一的值，class 只能是类不能是接口，因为需要反射-->
+> <!--bean 的范围调整
+>          bean的scope属性：
+>                作用： 用于指定bean的作用范围
+>               取值：常用的就是单例和多例
+>                  1）：prototype 多例
+>                  2）：singleton 单例（默认值）
+>                  3）：request 作于web应用的请求的范围
+>                  4）：session 作与web应用的会话范围
+>                  5）：global-session 作与集群环境的会话范围（全局会话范围），当不是集群范围内就是session
+>                -->    
+> <!--bean的生命周期
+>            单例对象：
+>            出生：当容器创建对象时对象出生
+>            活着：只要容器还在，一直存活
+>            死亡：容器销毁，对象死亡
+>            总结：单例的生命周期和容器相同
+>            多例对象：
+>            出生：当我们使用对象时spring框架为我们创建
+>            活着：对象只要在使用就一直活着
+>            死亡：当对象长时间不用，且没有别的对象引用时，由java垃圾回器进行回收
+>            -->
+> <bean id="somecervice" class="com.spring.wenqingwang.service.imp.SomeserviceIMp" scope="singleton"></bean>
+> <!--spring可以创建非自定义对象-->
+> <bean id="mydate" class="java.util.Date"/>
 > </beans>
 > ```
 >
 > 3.spring容器创建对象
 >
 > ```java 
->        //使用spring容器创建对象
->        /**
+>  //使用spring容器创建对象
+>  /**
 >        * spring默认创建对象的时间：在创建spring容器时，会创建配置文件中的所有对象
 >        * spring默认创建的是无参构造
 >        */
@@ -73,8 +94,20 @@
 >         //1.指定配置文件路径
 >         String config="bean.xml"; 
 >         //2.创建容器
->         //创建容器的对象 ，ApplicationContext
->         //ClassPathXmlApplicationContext 从类路径中加载spring的配置文件
+>        /**
+>          * 创建容器的对象 ，ApplicationContext 三大常见的实现类
+>          * ClassPathXmlApplicationContext 从类路径中加载spring的配置文件
+>          * FileSystemXmlApplicationContext 可以加载磁盘任意路径下的文件（必须有访问权限）
+>          * AnnotationConfigApplicationContext 读取注解创建容器
+>         */
+>     
+>        /**
+>          * BeanFactory和ApplicationContext的区别：
+>          *ApplicationContext:单例
+>          * 在构造容器时，创建对象采取的策略是采用立即加载方式，也就是说，只要读完配置文件立马创建配置文件中的对象
+>          * BeanFactory：多列
+>          * 在构造核心容器时，创建对象采取的策略是采用延迟加载方式，也就是说，什么时候获取Bean的id对象，就什么时候创建
+>         */
 >         ApplicationContext applicationContext= new ClassPathXmlApplicationContext(config);
 >         // 执行完上面这句代码就完成 创建对象
 >         //从容器中获取某个对象
@@ -259,6 +292,8 @@
 
 #### spring注解
 
+[注解](https://juejin.cn/post/6844903907173335047#heading-27)
+
 > 语法：
 >
 > 声明组件扫描器component-scan就是java对象
@@ -382,6 +417,94 @@
 > @Resource的作用相当于@Autowired，只不过@Autowired按照byType自动注入。
 >
 > ![](https://i.loli.net/2020/12/01/FtcxHmNsTQ34gq7.png)
+
+##### @Configuration 
+
+> ```java
+> /**
+>  * 
+>  * @Configuration
+>  * 作用：表明当前是一个配置类
+>  * 位置：在类的上面添加
+>  * 类等价 与XML中配置beans===<beans> <beans/>
+>  *
+>  */
+> @Configuration
+> public class Notenoughexception{
+>     
+> }
+> ```
+>
+> 该类等价 与XML中配置beans，相当于Ioc容器，它的某个方法头上如果注册了@Bean，就会作为这个Spring容器中的Bean，与xml中配置的bean意思一样。
+
+##### @ComponentScan
+
+```java
+/**
+ * @ComponentScan
+ * 作用：用于通过注解指定spring在创建容器是需要扫描的包
+ * 属性：
+ *    value：他和basePackages的作用是一样的，都是用于指定创建容器是扫描的包
+ *          我们使用此注解就等同于xml中配置配置：
+ *          <context:component-scan base-package="XX"/>
+ *          如果如果扫描一个包或可直接写如：@ComponentScan（""）
+ *          如果扫描多个包：例如:@ComponentScan({"com.example.service.rpc","com.example.web.controller"})
+ */
+@ComponentScan("xx ")
+public class Notenoughexception {
+    
+}
+```
+
+##### @Bean
+
+> ```java
+> @Configuration
+> public class AppConfig {
+>  /**
+>  * @Bean
+>  *  作用： 用于把当前的返回值作为bean对象存入spring的IOC容器中
+>  *  属性： name指定bean的Id，不写是默认是当前方法的名称
+>  *
+>  */
+>     @Bean
+>     public TransferService transferService() {
+>         return new TransferServiceImpl();
+>     }
+>  
+> }
+> =============这个配置就等同于之前在xml里的配置============
+> <beans>
+>     <bean id="transferService" class="com.acme.TransferServiceImpl"/>
+> </beans>
+> ```
+
+##### @Import
+
+> ```java
+> /**
+>  * Import
+>  *   作用：用于导入其他配置类
+>  *   属性：value。用来指定其他配置类的自己码
+>  *        当我们使用Import注解之后，有Import配置类就是父配置类，而导入的是子配置类
+>  */
+> @Import(xx.class)
+> ```
+
+##### @PropertySource
+
+> ```java
+> /**
+>  * PropertySource:
+>  *       作用：用于指定properties文件的位置
+>  *       属性：
+>  *          value：指定文件的路径和名称
+>  *          关键字；classpath：表示类路径下
+>  */
+> @PropertySource("classpath:")
+> ```
+>
+> 
 
 #### AOP面向切面编程
 
