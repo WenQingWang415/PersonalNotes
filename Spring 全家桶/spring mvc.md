@@ -204,49 +204,58 @@
 
 ##### 设置后端控制器 Controller
 
-> 开发Controller需要实现`import org.springframework.web.servlet.mvc.Controller`
->
-> ```java
-> 
-> public class HelloController implements Controller {
-> 
->     @Override
->     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-> 
->         ModelAndView modelAndView = new ModelAndView();
->         //设置数据到模型
->         modelAndView.addObject("hello","spring mvc");
->         //设置逻辑视图路径
->         modelAndView.setViewName("/WEB_INF/jsp/hello.jsp");
->         //返货模型和视图对象
->         return modelAndView;
->     }
-> }
-> 
-> ```
->
-> `ModelAndView`对象封装了`模型数据`和`视图对象`，在使用视图解析器，把ModelAndView对象解析两个部分，一个是Mode和View，然后将mode渲染到View上面，返回给用户
->
-> 在spring-config.xml配置后端控制器
->
-> ```xml
-> <!-- 配置后端控制器-->
-> <bean name="/hello" class="com.wenqingwang.controller.HelloController"/>
-> ```
->
-> **jsp页面**
->
-> ```jsp
-> <%@ page contentType="text/html;charset=UTF-8"%>
-> <html>
-> <head>
->     <title>spring mvc</title>
-> </head>
-> <body>
-> ${hello}
-> </body>
-> </html>
-> ```
+开发Controller需要实现`import org.springframework.web.servlet.mvc.Controller`
+
+```java
+
+public class HelloController implements Controller {
+
+ @Override
+ public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+     ModelAndView modelAndView = new ModelAndView();
+     //设置数据到模型
+     modelAndView.addObject("hello","spring mvc");
+     //设置逻辑视图路径
+     modelAndView.setViewName("/WEB_INF/jsp/hello.jsp");
+     //返货模型和视图对象
+     return modelAndView;
+ }
+}
+
+```
+
+`ModelAndView`对象封装了`模型数据`和`视图对象`，在使用视图解析器，把ModelAndView对象解析两个部分，一个是Mode和View，然后将mode渲染到View上面，返回给用户
+
+在spring-config.xml配置后端控制器
+
+```xml
+<!-- 配置后端控制器-->
+<bean name="/hello" class="com.wenqingwang.controller.HelloController"/>
+```
+
+**jsp页面**
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8"%>
+<%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="C" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--获取上下文路径--%>
+<C:set var="ctx" value="${pageContext.request.contextPath}"/>
+<%--使用方式
+    加载静态资源前面和请求前面
+     <link href="${ctx}/hello.jsp">
+    --%>
+
+<html>
+<head>
+ <title>spring mvc</title>
+</head>
+<body>
+${hello}
+</body>
+</html>
+```
 
 ##### 配置Tomcat
 
@@ -468,36 +477,38 @@
 > ```xml
 > <?xml version="1.0" encoding="UTF-8"?>
 > <beans xmlns="http://www.springframework.org/schema/beans"
->        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->        xmlns:context="http://www.springframework.org/schema/context"
->        xmlns:mvc="http://www.springframework.org/schema/mvc"
->        xsi:schemaLocation="http://www.springframework.org/schema/beans
->        http://www.springframework.org/schema/beans/spring-beans.xsd
->        http://www.springframework.org/schema/context
->        https://www.springframework.org/schema/context/spring-context.xsd
->        http://www.springframework.org/schema/mvc
->        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+>     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>     xmlns:context="http://www.springframework.org/schema/context"
+>     xmlns:mvc="http://www.springframework.org/schema/mvc"
+>     xsi:schemaLocation="http://www.springframework.org/schema/beans
+>     http://www.springframework.org/schema/beans/spring-beans.xsd
+>     http://www.springframework.org/schema/context
+>     https://www.springframework.org/schema/context/spring-context.xsd
+>     http://www.springframework.org/schema/mvc
+>     https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 > 
->     <!--1.开启注解扫描-->
->     <context:component-scan base-package="com.wenqingwang.controller"/>
->     <!-- 2,3.spring mvc 使用 <mvc:annotation-driven/>
->         自动加载RequestMappingHandlerMapping和RequestMappingHandlerAdapter
->         可以使用 <mvc:annotation-driven/>替代注解映射器和注解适配器
->     -->
->     <mvc:annotation-driven/>
->     <!--4.后端处理器-->
->     <!--5.配置视图解析器-->
->     <!--InternalResourceViewResolver：支持jsp视图解析 -->
->     <!--viewClass：JstlView表示jsp模板需要使用jstl标签库，所以classpath中必须包含jstl的相关jar包-->
->     <!--
->     prefix和suffix：查找视图页面的后缀和前缀，最终视图地址为：前缀+逻辑视图名+后缀，逻辑视图名需要在Controlle中返回ModelAndView对象设置
->     -->
->     <!-- 最终的返回jsp地址是/WEB-INF/jsp/hello.jsp-->
->     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
->         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
->         <property name="prefix" value="/WEB-INF/jsp/"/>
->         <property name="suffix" value=".jsp"/>
->     </bean>
+>  <!--1.开启注解扫描-->
+>  <context:component-scan base-package="com.wenqingwang.controller"/>
+>  <!-- 2,3.spring mvc 使用 <mvc:annotation-driven/>
+>      自动加载RequestMappingHandlerMapping和RequestMappingHandlerAdapter
+>      可以使用 <mvc:annotation-driven/>替代注解映射器和注解适配器
+>  -->
+> <mvc:annotation-driven/>
+> <!--不拦截静态资源-->
+> <mvc:default-servlet-handler/>
+>  <!--4.后端处理器-->
+>  <!--5.配置视图解析器-->
+>  <!--InternalResourceViewResolver：支持jsp视图解析 -->
+>  <!--viewClass：JstlView表示jsp模板需要使用jstl标签库，所以classpath中必须包含jstl的相关jar包-->
+>  <!--
+>  prefix和suffix：查找视图页面的后缀和前缀，最终视图地址为：前缀+逻辑视图名+后缀，逻辑视图名需要在Controlle中返回ModelAndView对象设置
+>  -->
+>  <!-- 最终的返回jsp地址是/WEB-INF/jsp/hello.jsp-->
+>  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+>      <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+>      <property name="prefix" value="/WEB-INF/jsp/"/>
+>      <property name="suffix" value=".jsp"/>
+>  </bean>
 > </beans>
 > ```
 
@@ -520,6 +531,290 @@
 > }
 > ```
 
+#### json需要的pom.xml
+
+```xml
+ <!--引入json的依赖-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+```
+
+
+
 #### 注解
 
-  
+##### @RequestMapping
+
+```java
+/**
+ *@RequestMapping
+ * 属性：
+ *    1）value：请求的url
+ *    2）method：设置HTTP方法 如：get请求 method = RequestMethod.GET
+ *    3）spring 4.3开始可用 @GetMapping @PostMapping  @PutMapping @DeleteMapping @PatchMapping 是@RequestMapping的不同变体
+ *       其HTTP方法分别使用 GET，POST，PUT,DELETE,PATCH  
+ *    */
+```
+
+#####   @DateTimeFormat
+
+> ```java
+>  /**
+>      * 一般使用在页面传到控制器日期格式化
+>      * @DateTimeFormat  声明字段或方法参数应格式化为日期或时间。
+>      * pattern：用于格式化字段的自定义模式。
+>      */
+>     @DateTimeFormat(pattern = "yyyy-MM-dd")
+>     private  Date datime;
+> ```
+
+##### @ResponseBody
+
+> ```java
+> 该@ResponseBody注解告诉控制器返回的对象将自动序列化为JSON，并通过回的HttpResponse对象。 返回json数据
+> 
+> 假设我们有一个自定义的Response对象：
+> 
+> public class ResponseTransfer {
+>     private String text; 
+>     
+>     // standard getters/setters
+> }
+> 接下来，可以实现关联的控制器：
+> 
+> @Controller
+> @RequestMapping("/post")
+> public class ExamplePostController {
+> 
+>     @Autowired
+>     ExampleService exampleService;
+> 
+>     @PostMapping("/response")
+>     @ResponseBody
+>     public ResponseTransfer postResponseController(
+>       @RequestBody LoginForm loginForm) {
+>         return new ResponseTransfer("Thanks For Posting!!!");
+>      }
+> }
+> 在浏览器的开发者控制台或使用Postman之类的工具，我们可以看到以下响应：
+> 
+> {"text":"Thanks For Posting!!!"}
+> 记住，我们不需要用@ResponseBody注释对@RestController注释的控制器进行注释，因为默认情况下Spring会这样做。
+> ```
+
+##### @RequestBody
+
+```xml
+/**
+ * RequestBody 接受json数据
+ * 该@RequestBody注解的映射的HttpRequest对象，自动反序列化到java对象
+ *
+ */
+@PostMapping("/request")
+public ResponseEntity postController(
+        @RequestBody LoginForm loginForm) {
+
+    exampleService.fakeAuthenticate(loginForm);
+    return ResponseEntity.ok(HttpStatus.OK);
+}
+/**
+* @RequestBody 默认从客户端发送相对应的json数据
+*/
+public class LoginForm {
+    private String username;
+    private String password;
+    // ...
+}
+//HttpRequest主体的对象映射到我们的LoginForm对象。 必须和pojo值对应
+/**
+ * 格式：{"username": "johnny", "password": "password"}
+ */
+
+```
+
+
+
+##### @PathVariable
+
+> ```java
+> //统一请求链接：http://localhost:8080/hello1/1   /直接拼接参数
+> /**
+>      * 第一种简单的映射
+>      * 该@PathVariable注释可以被用于处理在请求URI映射模板变量
+>      */
+>     @RequestMapping("/hello1/{id}")
+>     @ResponseBody
+>     public String zhujie1(@PathVariable Integer id) {
+>         return "id"+id;
+>     }
+> 
+>     /**
+>      * 第一种：如果路径变量名不同，我们可以指定
+>      * 该@PathVariable注释可以被用于处理在请求URI映射模板变量
+>      */
+>     @RequestMapping("/hello2/{id}")
+>     @ResponseBody
+>     public String zhujie2(@PathVariable("id") Integer employeeId) {
+>         return "id"+employeeId;
+>     }
+> 
+>     /**
+>      * 第三种：请求中有多个变量
+>      * 该@PathVariable注释可以被用于处理在请求URI映射模板变量
+>      */
+>     @RequestMapping("/hello3/{id}/{name}")
+>     @ResponseBody
+>     public String zhujie3(@PathVariable Integer id, @PathVariable String name) {
+>         return "id"+id+"name"+name;
+>     }
+> 
+>     /**
+>      * 第四种：使用类型为java.util.Map <String，String>的方法参数来处理多个@PathVariable参数：
+>      * 该@PathVariable注释可以被用于处理在请求URI映射模板变量
+>      */
+>     @RequestMapping("/hello4/{id}/{name}")
+>     @ResponseBody
+>     public String zhujie4(@PathVariable Map<String, String> pathmap) {
+>         String id = pathmap.get("id");
+>         String name = pathmap.get("name");
+>         if (id != null && name != null) {
+>             return "ID: " + id + ", name: " + name;
+>         } else {
+>             return"Missing Parameters";
+>         }
+> 
+>     }
+> 
+>     /**
+>      * 第五种：可选路径变量，由于默认情况下@PathVariables注释的方法参数是必需的
+>      * 该@PathVariable注释可以被用于处理在请求URI映射模板变量
+>      *@PathVariable的required属性设置为false，以使其可选 设置false可以传参数可以不传参数都不会报错
+>      */
+>     @RequestMapping(value = {"/hello5","/hello5/{id}"})
+>     @ResponseBody
+>     public String zhujie5(@PathVariable(required = false) Integer id) {
+> 
+>       return "id"+id;
+> 
+>     }
+> ```
+
+##### @JsonFormat
+
+> ```java
+> /**
+>  * 需要引入json的包 json需要的pom.xml
+>  * 在pojo中使用，在属性上面定义
+>  * pattern：表示时间格式
+>  * timezone：是时间设置为东八区，避免时间在转换中有误差
+>  */
+> @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+> private  Date date1;
+> ```
+
+####  文件上传
+
+##### 引入pom.xml
+
+```xml
+<!--文件上传-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.4</version>
+        </dependency>
+```
+
+##### spring-config.xml配置文件解析器
+
+```xml
+    <!--文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--限制文件的大小，不设置没有默认，单位为字节200*1024**1204 =200M-->
+        <property name="maxUploadSize" value="209715200"/>
+        <!--设置每个上传文件的大小上线 1024*1024*2=200M-->
+        <property name="maxUploadSizePerFile" value="209715200"/>
+        <!--处理文件乱码-->
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!--resolveLazily属性启动是为了推迟文件解析 以便获取文件大小异常-->
+        <property name="resolveLazily" value="true"/>
+    </bean>s
+```
+
+#### 拦截器
+
+##### 定义拦截器
+
+```java
+package com.wenqingwang.interceptor;
+
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class AuthInterceptor  implements HandlerInterceptor {
+    /**
+     * 在后端控制器方法调用前执行
+     * 返回值是否中断
+     * true 表示继续执行（下一个拦截器或处理器）
+     * false则会中断后续的所有操作，所以需要使用response来继续响应后续的请求
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        return false;
+    }
+
+    /**
+     *在后端控制器方法调用后，解析视图前调用，可以对视图和模型做进一步修改和渲染
+     * 可在ModelAndView中加入数据，比如时间
+     */
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    /**
+     *整个请求完成，即视图渲染结束后调用，可以清理资源，比如日志
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+
+    }
+}
+
+```
+
+##### spring-config.xml配置拦截器
+
+```xml
+<!--配置拦截器-->
+    <mvc:interceptors>
+        <!--匹配是url路径 如果不配置/**,将拦截所有的controller-->
+        <mvc:interceptor>
+            <!--拦截所有-->
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/fonts/**"/>
+            <mvc:exclude-mapping path="plugin/**"/>
+            <bean class="com.wenqingwang.interceptor.AuthInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+```
+
