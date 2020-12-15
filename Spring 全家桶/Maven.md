@@ -156,3 +156,40 @@
 
 > ![image.png](https://i.loli.net/2020/12/15/JTEV7Zb9jIvxHri.png)
 
+### Maven核心概念
+
+#### Maven坐标
+
+> ```xml
+> <dependencies>
+>   <dependency>
+>     <groupId>junit</groupId>
+>     <artifactId>junit</artifactId>
+>     <version>4.11</version>
+>     <scope>test</scope>
+>   </dependency>
+> </dependencies>
+> ```
+>
+> dependencies ：    在dependencies  标签中添加项目需要的jar所对应的maven坐标
+>
+> dependency：    一个dependency 表示一个坐标
+>
+> groupId：     定义当前Maven组织名称
+>
+> artifactId：    定义实际项目名称
+>
+> version：     定义当前项目的当前版本号
+>
+> scope  依赖范围
+>
+> | 依赖范围 |                  编译有效                   |                  测试有效                   |                 运行时有效                  |                  打包有效                   |       例子        |
+> | :------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :---------------: |
+> | Complie  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |    spring-core    |
+> |   test   |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |       junit       |
+> | provided | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       |    servlet-api    |
+> | runtime  |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |     JDBC驱动      |
+> |  system  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       | 本地maven之外的库 |
+>
+> 
+
