@@ -186,10 +186,12 @@
 > | 依赖范围 |                  编译有效                   |                  测试有效                   |                 运行时有效                  |                  打包有效                   |       例子        |
 > | :------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :---------------: |
 > | Complie  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |    spring-core    |
-> |   test   |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |       junit       |
+> |   test   |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       |       junit       |
 > | provided | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       |    servlet-api    |
 > | runtime  |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |     JDBC驱动      |
 > |  system  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       | 本地maven之外的库 |
->
-> 
+
+#### Maven依赖传递
+
+
 
