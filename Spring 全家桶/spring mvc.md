@@ -808,6 +808,7 @@ public class AuthInterceptor  implements HandlerInterceptor {
         <mvc:interceptor>
             <!--拦截所有-->
             <mvc:mapping path="/**"/>
+            <!--不拦截的-->
             <mvc:exclude-mapping path="/login"/>
             <mvc:exclude-mapping path="/css/**"/>
             <mvc:exclude-mapping path="/js/**"/>
@@ -818,3 +819,10 @@ public class AuthInterceptor  implements HandlerInterceptor {
     </mvc:interceptors>
 ```
 
+##### 多个拦截器执行顺序
+
+> 执行顺序首先看spring-config.xml多个拦截器配置的位置
+>
+> ![image.png](https://i.loli.net/2020/12/15/XtYbLydqzD6a1eV.png)
+>
+> 
