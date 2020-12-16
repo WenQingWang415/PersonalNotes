@@ -185,13 +185,266 @@
 >
 > | 依赖范围 |                  编译有效                   |                  测试有效                   |                 运行时有效                  |                  打包有效                   |       例子        |
 > | :------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :---------------: |
-> | Complie  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |    spring-core    |
+> | compile  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |    spring-core    |
 > |   test   |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       |       junit       |
 > | provided | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       |    servlet-api    |
 > | runtime  |      <span style="color:red">✘</span>       | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |     JDBC驱动      |
 > |  system  | <span style="color:cornflowerblue">✔</span> | <span style="color:cornflowerblue">✔</span> |      <span style="color:red">✘</span>       |      <span style="color:red">✘</span>       | 本地maven之外的库 |
 
 #### Maven依赖传递
+
+> A->B(compile)   第一关系: a依赖b  compile
+>
+> B->C(compile)   第二关系: b依赖c  compile
+>
+> ```xml
+> 当在A中配置
+> <dependency>  
+>             <groupId>com.B</groupId>  
+>             <artifactId>B</artifactId>  
+>             <version>1.0</version>  
+> </dependency>
+> ```
+>
+> ![image.png](https://i.loli.net/2020/12/16/vVf4HtqnPBLARke.png)
+
+#### 依赖冲突
+
+> 如果直接依赖和间接依赖中包含有同一个坐标不同版本的资源依赖 ，以直接依赖的版本为准（就近原则）
+>
+> ![image.png](https://i.loli.net/2020/12/16/lgUKGEYhvDw4BV2.png)
+>
+> 
+>
+> 如果直接依赖中包含同一个坐标不同版本的资源依赖，以配置顺序下方的版本为准（就近原则）
+>
+> ![image.png](https://i.loli.net/2020/12/16/vVmGYE835pN4Akc.png)
+>
+> 
+
+
+
+#### 可选依赖
+
+> ```xml
+> <optional>true/false</optional>
+> ```
+>
+> 是否可选，理解为是否向下传递
+>
+> 在依赖中添加`optional`选项决定依赖是否向下传递，如果是true向下传递，如果是false不向下传递，默认是false
+>
+> ```xml
+>  <dependency>
+>         <groupId>junit</groupId>
+>         <artifactId>junit</artifactId>
+>         <version>3.8.2</version>
+>         <scope>test</scope>
+>         <optional>false</optional>
+>     </dependency>
+> ```
+>
+> 
+
+#### 排除依赖（==<span style="background:red">可以解决包冲突</span>==）
+
+> 排除依赖包中所包含的关系，不需要添加版本号
+>
+> 如果在本次依赖有多余的jar包被传递依赖过来，如果想把这些表排除的话可以配置exclusions进行排除
+>
+> ```xml
+>  <!--spring-webmvc 包含spring-aop，context，core，web，expression，beans-->
+>         <dependency>
+>             <groupId>org.springframework</groupId>
+>             <artifactId>spring-webmvc</artifactId>
+>             <version>5.2.6.RELEASE</version>
+>             <!--排除依赖-->
+>             <exclusions>
+>                 <exclusion>
+>                     <groupId>org.springframework</groupId>
+>                     <artifactId>spring-aop</artifactId>
+>                 </exclusion>
+>             </exclusions>
+>         </dependency>
+> ```
+>
+> ![image.png](https://i.loli.net/2020/12/16/tkc4fxFDEI6BKJv.png)
+
+### 生命周期
+
+#### 什么是生命周期？
+
+> Maven生命周期就是为了对**所有的构建过程进行抽象和统一**，包括项目的清理，初始化，编译，打包，测试，部署等几乎所有构建的步骤
+
+#### 生命周期构建工程的步骤
+
+在Maven中有<span style="color:red">“三套”“相互独立”</span>的生命周期，这三套生命周期分别是：
+
+> `Clean Lifecycle`:在真正构建之前进行一些清理工作
+>
+> `Default Lifecycle`:构建核心部分，**编译，测试，打包，部署等等**
+>
+> `Site Lifecycle`:生成项目报告，站点，发布站点
+
+> 他们是相互独立的，你可以仅仅调用`clean`清理或者调用`site`生成站点，也可以直接运行 `mvn clean install site`运行所有这三套的生命周期
+
+#### Maven三大生命周期
+
+##### clean生命周期
+
+> 当我们调用 mvc post-clean命令是，Maven调用生命周期，包含几个阶段：
+>
+> - pre-clean：执行一些需要在clean之前完成的工作
+> - clean：移除所有上一次构成生成的文件
+> - post-clean：执行一些在需要clean之后立刻完成的工作
+>
+> 如果执行 `mvn clean`将会运行以下两个生命周期阶段：
+>
+> ```cmd
+> pre-clean ,clean
+> ```
+>
+> 如果执行 `mvn post-clean`将会运行以下三个生命周期阶段：
+>
+> ```mnd
+> pre-clean, clean ,post-clean
+> ```
+
+##### default（BUlid）生命周期
+
+> 这是maven的主要生命周期，包括下面23个阶段
+>
+> |                生命周期阶段                |                            描述                            |
+> | :----------------------------------------: | :--------------------------------------------------------: |
+> |              validate（校验）              |    校验项目是否正确并且所有必要的信息可以完成项目的构建    |
+> |            initialize（初始化）            |               初始化构建状态，比如设置属性值               |
+> |       generate-sources（生成源代码）       |                生成包含编译阶段中的任何代码                |
+> |       process-sources（处理源代码）        |                处理源代码，比如：过滤任意值                |
+> |     genrate-resources（生成资源文件）      |              生成将会包含在项目包中的资源文件              |
+> |     process-resources（处理资源文件）      |         复制和处理资源到目标目录，为打包阶段做准备         |
+> |              compile（编译）               |                      编译项目的源代码                      |
+> |       process-classes（处理类文件）        |  处理编译生成的文件，比如对java class文件做字节码改善优化  |
+> |   genrate-test-sources（生成测试源代码）   |                生成包含编译阶段的任何源代码                |
+> |   process-test-sources（处理测试源代码）   |                       处理测试源代码                       |
+> | genrate-test-resources（生成测试资源文件） |                     为测试创建资源文件                     |
+> | process-testresources（处理测试资源文件）  |                复制和处理测试资源到目标目录                |
+> |       test-compile（编译测试源代码）       |                  编译测试源代码到测试目录                  |
+> |    process-test-classes（处理测试文件）    |                处理测试源代码编译生成的文件                |
+> |                test（测试）                |        使用单元测试框架运行测试 如：juint是其中之一        |
+> |        prepare-package（准备打包）         |         在是实际打包之前，执行任何有必要的打包准备         |
+> |               package(打包)                | 将编译好的文件打包可分发格式的文件，比如jar，war，ear文件  |
+> |     pre-integration-test（集成测试前）     |      在执行集成测试环境进行必要的动作，比如：环境搭建      |
+> |        integration-test（集成测试）        |              处理和部署到可运行集成测试环境中              |
+> |       post-integration（集成测试后）       | 在执行集成测试完成后进行必要的动作，比如：清理集成测试环境 |
+> |               verify（验证）               |         运行任意的检查来验证项目包有效达到质量标准         |
+> |              install（安装）               |   安装项目包到本地仓库，这样项目包可以用作其他项目的依赖   |
+> |               deploy（部署）               |        最终的项目包复制到远程仓库中与其他开发者共享        |
+>
+> 有一些与 Maven 生命周期相关的重要概念需要说明：
+>
+> 当一个阶段通过 Maven 命令调用时，例如 mvn compile，只有该阶段之前以及包括该阶段在内的所有阶段会被执行。
+>
+> 不同的 maven 目标将根据打包的类型（JAR / WAR / EAR），被绑定到不同的 Maven 生命周期阶段。
+
+##### site 生命周期
+
+> Maven Site插件一般用来创建新的报告，文档，部署站点等
+>
+> - pre-site：执行一些需要在生成站点文档完成的工作
+> - site：生成项目站点文档
+> - post-site：执行一些需要生成站点文档之后完成的工作，并且为部署做准备
+> - site-deploy：将生成的站点文档部署到特定的服务器上
+
+### Maven 继承
+
+#### 创建父工程
+
+> 创建父工程和普通maven项目一样
+>
+> - 在创建成功之后再pom.xml添加   
+>
+> ```xml
+>   <packaging>pom</packaging>
+> ```
+>
+> - 删除整个src目录
+>
+> ![image.png](https://i.loli.net/2020/12/16/Fy2feV7lrNpgDP5.png)
+
+#### 创建子工程
+
+> 在idea中子工程（模块）创建如图
+>
+> ![image.png](https://i.loli.net/2020/12/16/YtaJu61LIXmVTrE.png)
+>
+> 创建成功之后pom.xml
+>
+> ![image.png](https://i.loli.net/2020/12/16/TJg6iLMjUwuqN2v.png)
+
+#### 父工程统一管理jar的版本号
+
+> pom类型工程不直接使用项目依赖的jar
+>
+> ​	在父工程添加依赖
+>
+> ```xml
+> <!--声明依赖标签-->
+>     <dependencyManagement>
+>         <dependencies>
+>             <dependency>
+>                 <groupId>junit</groupId>
+>                 <artifactId>junit</artifactId>
+>                 <version>4.13.1</version>
+>                 <scope>test</scope>
+>             </dependency>
+>         </dependencies>
+>     </dependencyManagement>
+> ```
+>
+> 在子工程使用
+>
+> ```xml
+> <dependencies>
+>     <dependency>
+>         <groupId>junit</groupId>
+>         <artifactId>junit</artifactId>
+>         <scope>test</scope>
+>     </dependency>
+> </dependencies>
+> ```
+>
+> 版本统一
+>
+> ```xml
+> <properties>
+>         <!--可以自定义标签-->
+>         <junit.version>4.13.1</junit.version>
+>     </properties>
+>     <!--声明依赖标签-->
+>     <dependencyManagement>
+>         <dependencies>
+>             <dependency>
+>                 <groupId>junit</groupId>
+>                 <artifactId>junit</artifactId>
+>                 <!--使用${名称}-->
+>                 <version>${junit.version}</version>
+>                 <scope>test</scope>
+>             </dependency>
+>         </dependencies>
+>     </dependencyManagement>
+> ```
+
+### Maven 聚合
+
+> 聚合一般一个工程拆分成多个模块开发
+>
+> 每个模块都是独立的工程，但是运行时必须把所有模块聚合到一起才是一个完成的工程，此时可以使用maven的聚合工程
+>
+> 电商项目中，包括（商品模块），订单模块，用户模块等---------按业务模块聚合
+>
+> 表现层，业务层，持久层，分层不同的工程，最后打包是聚合到一起----------架构上的聚合
+
+
 
 
 
