@@ -6,7 +6,7 @@
 
 ### Mybatis工作流程
 
->   <img src="https://i.loli.net/2020/12/17/wVzOfvJlsnPSYB7.png" alt="image.png" align='left'/>
+>   ![工作流程](https://i.loli.net/2020/12/17/wVzOfvJlsnPSYB7.png)
 >
 > 1. 加载配置并初始化
 >
@@ -67,7 +67,7 @@
 
 ### Mybatis整体架构
 
->   <img src="https://i.loli.net/2020/12/17/rcZ9IkTbVt4UBf6.png" align='left' />
+>   ![image.png](https://i.loli.net/2020/12/17/rcZ9IkTbVt4UBf6.png)
 >
 > 每一层的详解：
 >
@@ -402,11 +402,11 @@ public class UserDaoTest {
 
 > - `mapper`接口的全限定名要和`mapper`映射文件的`namespace`值一致
 >
->     <img src="https://i.loli.net/2020/12/17/5iGonESyZrJas2z.png" align='left' />
+>     ![image.png](https://i.loli.net/2020/12/17/5iGonESyZrJas2z.png)
 >
 > - `mapper`接口的方法名称要和`mapper`映射文件的`statement`的`id`一致
 >
->     <img src="https://i.loli.net/2020/12/17/uOlNXCe3JgrTfH9.png" align='left' />
+>     ![image.png](https://i.loli.net/2020/12/17/uOlNXCe3JgrTfH9.png)
 >
 > - `mapper`接口的方法参数类型要和`mapper`映射文件的`statement`的`paramenterType`的值一致
 >
