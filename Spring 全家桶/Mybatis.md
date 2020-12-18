@@ -415,3 +415,457 @@ public class UserDaoTest {
 > - `mapper`接口的方法返回值类型和`mapper`映射文件的`statement`的`resultType`的值一致
 >
 >     ![image.png](https://i.loli.net/2020/12/17/87IVkYxnluUpFcO.png)
+
+### 日志配置
+
+> [Log4j中文文档](https://www.docs4dev.com/docs/zh/log4j2/2.x/all/manual-configuration.html#AutomaticConfiguration)
+
+#### 在pom.xml文件中引入log4j类库
+
+> ```xml
+> <dependency>
+>     <groupId>org.apache.logging.log4j</groupId>
+>     <artifactId>log4j-core</artifactId>
+>     <version>2.11.2</version>
+> </dependency>
+> ```
+
+#### 在resources目录下创建log4j2.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--status="WARN" :用于设置log4j2自身内部日志的信息输出级别，默认是OFF-->
+<!--monitorInterval="30"  :间隔秒数,自动检测配置文件的变更和重新配置本身-->
+<Configuration status="WARN" monitorInterval="30">
+    <Appenders>
+        <!-- 输出到控制台 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--<PatternLayout pattern="%d{HH:mm:ss.SSS}  [%t]  %-5level %logger{36} - %msg%n " />-->
+            <!--添加有颜色字体
+            IDEA中，点击右上角->Edit Configurations，在VM options中添加
+            {在IDEA运行的旁边}
+            -Dlog4j.skipJansi=false
+            -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5level} [%t] %highlight{%c{1.}.%M(%L)}: %msg%n"/>
+            <!--
+            格式化符号说明：
+            %p：输出日志信息的优先级，即DEBUG，INFO，WARN，ERROR，FATAL。
+            %d：输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，如：%d{yyyy/MM/dd HH:mm:ss,SSS}。
+            %r：输出自应用程序启动到输出该log信息耗费的毫秒数。
+            %t：输出产生该日志事件的线程名。
+            %l：输出日志事件的发生位置，相当于%c.%M(%F:%L)的组合，包括类全名、方法、文件名以及在代码中的行数。例如：test.TestLog4j.main(TestLog4j.java:10)。
+            %c：输出日志信息所属的类目，通常就是所在类的全名。
+            %M：输出产生日志信息的方法名。
+            %F：输出日志消息产生时所在的文件名称。
+            %L:：输出代码中的行号。
+            %m:：输出代码中指定的具体日志信息。
+            %n：输出一个回车换行符，Windows平台为”rn”，Unix平台为”n”。
+            %x：输出和当前线程相关联的NDC(嵌套诊断环境)，尤其用到像java servlets这样的多客户多线程的应用中。
+            %%：输出一个”%”字符。
+
+            另外，还可以在%与格式字符之间加上修饰符来控制其最小长度、最大长度、和文本的对齐方式。如：
+            1) c：指定输出category的名称，最小的长度是20，如果category的名称长度小于20的话，默认的情况下右对齐。
+            2)%-20c：”-“号表示左对齐。
+            3)%.30c：指定输出category的名称，最大的长度是30，如果category的名称长度大于30的话，就会将左边多出的字符截掉，但小于30的话也不会补空格。
+            -->
+        </Console>
+    </Appenders>
+    <Loggers>
+       <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+        <Root level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
+```
+
+### 输入类型映射
+
+#### 简单数据类型映射
+
+> **一个参数**
+
+> ```xml
+> 
+> <select id="getUsernane" resultType="com.mybatis.pojo.User" parameterType="java.lang.String">
+>         <!--
+>         模糊查询：
+>        1. #{} 表示一个占位符号 相当于 jdbc中的 ? 符号
+>             在控制器中添加百分号：“%测试%” 如：param.setUsername("%测试%"); 在 java 代码中传参的时候直接写上
+>        2. ${value}中value值有限制只能写对应的value值不能随便写，
+>          原样输出：'%测试%'
+>          无法防止SQL注入，所以不推荐使用
+>         3.CONCAT 拼接函数
+>           AND name LIKE CONCAT(CONCAT('%',#{name},'%'))
+>         4.bind标签
+>          添加<bind name="name" value="'%'+neme+'%'"/>
+>          where name like #{name}
+>         -->
+>         <bind name="name" value="'%'+neme+'%'"/>
+>         select * from user
+>         <!-- where name like #{name}-->
+>         <!--where name like '%${value}%'-->
+>         <!--where  name like CONCAT('%',#{naem},'%')-->
+>         where name like #{name}
+>     </select>
+> ```
+
+> **多个参数**
+>
+> 使用@Param注解
+>
+> ```java
+>  /**
+>      *如果多个参数
+>      * 在参数前面使用@Param注解
+>      */
+> List<User> getUserNamePasswod(@Param("name") String name, @Param("pwd") String pwd);
+> ```
+>
+> @Param("name")  CONCAT('%',#{name},'%') 这两个参数一致
+>
+> ```xml
+>  <!--多个参数
+>     -->
+>     <select id="getUserNamePasswod" resultType="com.mybatis.pojo.User">
+>         SELECT * FROM user where  
+>         name like CONCAT('%',#{name},'%')  AND   pwd like CONCAT('%',#{pwd},'%')
+>     </select>
+> ```
+
+#### 对象类型映射
+
+> ```java
+> //dao
+> List<User> getUserNamePasswod1(User user);
+> ```
+>
+> ```xml
+>   <!--多个参数
+>     -->
+> <select id="getUserNamePasswod1" resultType="com.mybatis.pojo.User" 
+>          parameterType="com.mybatis.pojo.User">
+>         SELECT * FROM user 
+>      where  name like CONCAT('%',#{name},'%') AND   pwd like CONCAT('%',#{pwd},'%')
+>     </select>
+> ```
+>
+> 测试：
+>
+> ```java
+> @Test
+>     public void test2(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         /*执行SQL
+>          *   方式一
+>          * */
+>         UserDao userDao = sqlSession.getMapper(UserDao.class);
+>         User user1=new User();
+>         user1.setName("测试001");
+>         user1.setPwd("123456");
+>         List<User> userList = userDao.getUserNamePasswod1(user1);
+>         for (User user : userList) {
+>             System.out.println(user);
+>         }
+> 
+>         sqlSession.close();
+>     }
+> ```
+>
+> 
+
+#### Map集合类型映射
+
+> ```java
+> //dao
+>  List<User> getUserNamePasswod2(Map<String, Object> map);
+> ```
+>
+> ```xml
+> <!--#{name}要和map中的Key一致-->
+>     <select id="getUserNamePasswod2" resultType="com.mybatis.pojo.User" 
+>             parameterType="java.util.Map">
+>         SELECT * FROM user 
+>         where  name like CONCAT('%',#{name},'%') AND   pwd like CONCAT('%',#{pwd},'%')
+>     </select>
+> ```
+>
+> 测试：
+>
+> ```java
+> @Test
+>     public void test3(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         /*执行SQL
+>          *   方式一
+>          * */
+>         UserDao userDao = sqlSession.getMapper(UserDao.class);
+>         Map<String, Object> map =new HashMap();
+>         map.put("name","测试001");
+>         map.put("pwd","123456");
+>         List<User> userList = userDao.getUserNamePasswod2(map);
+>         for (User user : userList) {
+>             System.out.println(user);
+>         }
+> 
+>         sqlSession.close();
+>     }
+> ```
+
+#### 主键回写
+
+> ```java
+> //dao
+> void  adduser(User user);
+> ```
+>
+> ```xml
+> <!--第一种：主键回写
+>             keyProperty:指定对象的那个属性是主键
+>             keyColumn：指定数据库主键列的名称
+>             useGeneratedKeys：参数只对insert有效。默认是false
+>                        当设置为ture时，表示如果插入的表以自增为主键，则允许JDBc支持自动生成，并将自动生成的主键返回
+>     -->
+>     <insert id="adduser" parameterType="com.mybatis.pojo.User"
+>             keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+>         INSERT into
+>         user(name,pwd)
+>         value (#{name},#{pwd})
+>     </insert>
+> <!--第二种：主键回写LAST_INSERT_ID
+>         keyProperty:指定对象的那个属性主键
+>         keyColumn：指定数据库主键列的名称
+>         resultType：主键java的类型
+>         order：
+>              AFTER：在insert语句执行之后再去获取主键的值，如：数据库主键自动增长是使用
+>              BEFORE：在update语句执行前再去获取主键的值，如：数据库主键UUID
+> -->
+>     <insert id="adduser" parameterType="com.mybatis.pojo.User">
+>         <selectKey keyProperty="id" keyColumn="id" resultType="java.lang.Integer" order="AFTER">
+>             select LAST_INSERT_ID()
+>         </selectKey>
+>         INSERT into
+>         user(name,pwd)
+>         value (#{name},#{pwd})
+>     </insert>
+> <!--第三种：主键回写UUID
+>         keyProperty:指定对象的那个属性主键
+>         keyColumn：指定数据库主键列的名称
+>         resultType：主键java的类型
+>         order：
+>              AFTER：在insert语句执行之后再去获取主键的值，如：数据库主键自动增长是使用
+>              BEFORE：在update语句执行前再去获取主键的值，如：数据库主键UUID
+>        数据库的ID是String类型的，
+> -->
+>     <insert id="adduserUUID" parameterType="com.mybatis.pojo.UserUUID">
+>         <selectKey keyProperty="id"  resultType="java.lang.String" order="BEFORE">
+>             select UUID()
+>         </selectKey>
+>         INSERT into
+>         user(id,name,pwd)
+>         value (#{id},#{name},#{pwd})
+>     </insert>
+> ```
+>
+> 测试：
+>
+> ```java
+> @Test
+>     public void test4(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         /*执行SQL
+>          *   方式一
+>          * */
+>         UserDao userDao = sqlSession.getMapper(UserDao.class);
+>         User user1=new User();
+>         user1.setName("测试001");
+>         user1.setPwd("123456");
+>         userDao.adduser(user1);
+>         sqlSession.commit();
+>         System.out.println(user1.getId());
+> 
+>         sqlSession.close();
+>     }
+> ```
+
+### 输出类型映射
+
+#### resultType
+
+> 使用要求
+>
+> - 使用resultType进行结果映射时，需要查询出的列名和映射的对象属性名一致，才能映射成功
+> - 如果查询的列名和对象的属性名全部不一致，那么映射为空
+> - 如果查询的列名和对象的属性名有一个一致，那么映射的对象不为空，但是映射正确的才会有值
+> - 如果查询的SQL列名有别名，那么这个别名就是属性映射的列名
+
+**输出基本类型**
+
+> 注意：对简单类型的结果映射也是有要求的，查询的必须是一列，才能映射简单类型
+
+**输出对象或者集合**
+
+> - 返回List
+>
+>   ```java
+>   List<User> getUserList();
+>   ```
+
+#### resultMap
+
+> ```xml
+>   <!--完成数据库列名和对象名称之间的映射关系-->
+>     <resultMap id="UserMap" type="com.mybatis.pojo.User">
+>         <!--主键-->
+>         <id property="id" column="id"/>
+>         <!--普通列-->
+>         <result property="name" column="name"/>
+>     </resultMap>
+>  <!--使用resultMap=“id”-->
+>     <select id="getUserList" resultMap="UserMap">
+>         select * from user
+>     </select>
+> ```
+
+### 动态SQL
+
+> 在Mybatis中，它提供了一些动态SQL标签，可以更快速开发
+
+常用的SQL动态标签
+
+> - if标签
+> - where标签
+> - SQL片段
+> - foreach标签
+
+#### where和if标签
+
+> ```xml
+> 
+>     <select id="getUserNamePasswod1" resultMap="UserMap">
+>         SELECT * FROM user
+>         <!--where标签可以去掉查询条件中的第一个and关键字-->
+>         <where>
+>         <if test="name !=null and name!=''">
+>             AND  name like CONCAT('%',#{name},'%')
+>         </if>
+>             <if test="pwd !=null and pwd!=''">
+>                 AND   pwd like CONCAT('%',#{pwd},'%')
+>             </if>
+> 
+>         </where>
+> 
+>     </select>
+> ```
+
+#### SQL片段
+
+> ```xml
+> <select id="getUserNamePasswod1" resultMap="UserMap">
+>         SELECT * FROM user
+>        <!--引入SQL片段-->
+>         <include refid="wheresql"/>
+>     </select>
+>     <!-- sql片段-->
+>     <sql id="wheresql">
+>         <!--where标签可以去掉查询条件中的第一个and关键字-->
+>         <where>
+>             <if test="name !=null and name!=''">
+>                 AND name like CONCAT('%',#{name},'%')
+>             </if>
+>             <if test="pwd !=null and pwd!=''">
+>                 AND pwd like CONCAT('%',#{pwd},'%')
+>             </if>
+> 
+>         </where>
+> 
+>     </sql>
+> ```
+
+#### foreach标签
+
+> ```java
+> //dao
+>  /**
+>      * 通过id查询集合
+>      * @param ids
+>      * @return
+>      */
+>    List<UserUUID> getbyid(@Param("ids") List<Integer> ids);
+> ```
+>
+> ```xml
+>     <!-- 第一种使用in（6,7,9）
+> -->
+> <select id="getbyid" resultMap="UserMap" parameterType="java.util.List">
+>         <!--
+>         使用foreach遍历传入ids
+>             collection:指定输入对象中的集合名称
+>             item:每次生成遍历的对象
+>             open:开始遍历时拼接的字符串
+>             close：解释遍历时拼接字符串
+>             separator:分割符：遍历两个对象中需要拼接的串
+>         -->
+>         select  * from user
+>         <where>
+>             <foreach collection="ids" item="item_id" open="and id in (" separator="," close=")">
+>                 #{item_id}
+>             </foreach>
+>         </where>
+>     </select>
+> <!-- 第二种使用or拼接
+> -->
+>   <select id="getbyid" resultMap="UserMap" parameterType="java.util.List">
+>         <!--
+>         使用foreach遍历传入ids
+>             collection:指定输入对象中的集合名称
+>             item:每次生成遍历的对象
+>             open:开始遍历时拼接的字符串
+>             close：解释遍历时拼接字符串
+>             separator:分割符：遍历两个对象中需要拼接的串
+>         -->
+>         select  * from user
+>         <where>
+>             <foreach collection="ids" item="item_id" open="and  " separator="or" close="">
+>              id=   #{item_id}
+>             </foreach>
+>         </where>
+>     </select>
+> ```
+>
+> 测试
+>
+> ```java
+>  @Test
+>     public void test6(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         /*执行SQL
+>          *   方式一
+>          * */
+>         UserDao userDao = sqlSession.getMapper(UserDao.class);
+>        List<Integer> ids = new ArrayList();
+>        ids.add(6);
+>        ids.add(7);
+>        ids.add(9);
+>         List<UserUUID> userList = userDao.getbyid(ids);
+>         for (UserUUID user : userList) {
+>             System.out.println(user);
+>         }
+> 
+>         sqlSession.close();
+>     }
+> ```
+
+### 高级映射
+
+> 
+
