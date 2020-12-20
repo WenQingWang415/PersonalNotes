@@ -867,5 +867,340 @@ public class UserDaoTest {
 
 ### 高级映射
 
+#### 一对一的映射
+
+> 编写pojo
+>
+> ```java
+> @Data
+> public class Student {
+>     private  Integer studentId;
+>     private  String studentname;
+>     private String  studentset;
+> }
+> @Data
+> public class StudentDetailsId {
+>     private Integer StudentdetailsId;
+>     private  String site;
+>     private Student student;
+> }
+> ```
+>
+> 编写接口dao
+>
+> ```java
+> List<StudentDetailsId> getbyStudID(Integer id);
+> ```
+>
+> mapper
+>
+> ```xml
+> <mapper namespace="com.mybatis.dao.Studentdao">
+>     <resultMap id="StudenMap" type="com.mybatis.pojo.StudentDetailsId">
+>         <id column="StudentdetailsId" property="StudentdetailsId"/>
+>         <result column="site" property="site"/>
+>         <!--一对一的关系
+>         property 是pojo里面对应的名称
+>         -->
+>         <association property="student" javaType="com.mybatis.pojo.Student">
+>             <id column="studentId" property="studentId"/>
+>             <result column="studentname" property="studentname"/>
+>             <result column="studentset" property="studentset"/>
+>         </association>
+>     </resultMap>
+>     <select id="getbyStudID" resultMap="StudenMap" parameterType="java.lang.Integer">
+>     SELECT
+> 	*
+> FROM
+> 	studentdetailsld,
+> 	student
+> WHERE
+> 	studentdetailsld.studentId = student.studentId
+> 	AND studentdetailsld.studentId =#{id}
+> </select>
+> ```
+>
+> 在配置文件中添加
+>
+> ```xml
+> <!--每个*Mapper.xml都需要在这里注册-->
+> <mappers>
+>     <mapper resource="com/mybatis/dao/UserMapper.xml"></mapper>
+>     <mapper resource="com/mybatis/dao/StudentMapper.xml"></mapper>
+> </mappers>
+> ```
+
+#### 一对多的映射
+
+> pojo
+>
+> ```java
+> @Data
+> public class SubWay {
+>     private  Integer subwayId;
+>     private  String subwayname;
+>     private String subwaycity;
+>     private List<SubWayStation> stations;
+> }
+> @Data
+> public class SubWayStation {
+>     private  Integer subwayStationID;
+>     private  Integer subwayId;
+>     private String subwayStationName;
+> }
+> 
+> ```
+>
+> dao
+>
+> ```xml
+> SubWay getid(Integer id);
+> ```
+>
+> mapper
+>
+> ```xml
+> <mapper namespace="com.mybatis.dao.SubWaydao">
+>     <resultMap id="SubWayMap" type="com.mybatis.pojo.SubWay">
+>         <id property="subwayId" column="subwayId"/>
+>         <result column="subwayname" property="subwayname"/>
+>         <result column="subwaycity" property="subwaycity"/>
+>         <!--一对多
+>         ofType数据存放的类型
+>         -->
+>         <collection property="stations" ofType="com.mybatis.pojo.SubWayStation">
+>             <id property="subwayStationID" column="subwayStationID"/>
+>             <result column="subwayStationName" property="subwayStationName"/>
+>             <result column="subwayId" property="subwayId"/>
+>         </collection>
+>     </resultMap>
+>     <select id="getid" resultMap="SubWayMap" parameterType="java.lang.Integer">
+>         select * from subway,subwaystation where subway.subwayId=subwaystation.subwayid 
+>         and subway.subwayId=#{id}
+>     </select>
+> ```
+>
+> 测试：
+>
+> ```java
+>  @Test
+>     public void test(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+>         
+>         SubWaydao studentdao = sqlSession.getMapper(SubWaydao.class);
+>         SubWay subWay =studentdao.getid(1);
+>         System.out.println(subWay);
+>         sqlSession.close();
+>     }
+> ```
+
+### Mybatis延迟加载
+
+> 延迟加载又叫懒加载，也叫按需求加载，也就说说先加载主表信息，在需要的时候在去从表中加载数据信息
+>
+> 在Mybatis中，resultMap标签的collection标签和association标签具有延迟加载功能
+
+> dao
+>
+> ```java
+> SubWay getLazy(Integer id);
+> List<SubWayStation> getbyid(Integer id);
+> ```
+>
 > 
 
+> mapper
+>
+> ```xml
+> <mapper namespace="com.mybatis.dao.SubwayStationdao">
+> <select id="getbyid" resultType="com.mybatis.pojo.SubWayStation" parameterType="java.lang.Integer">
+>     select * from subwaystation where  subwaystation.subwayId=#{id}
+> </select>
+> ```
+>
+> 
+
+> ```xml
+>  <resultMap id="SubWayMapLazy" type="com.mybatis.pojo.SubWay">
+>         <id property="subwayId" column="subwayId"/>
+>         <result column="subwayname" property="subwayname"/>
+>         <result column="subwaycity" property="subwaycity"/>
+>         <!--
+>           select:
+>                 指定关联查询的查询 getbyid
+>                 命名空间：getbyid  看上面一段代码
+>           property：
+>                   查询的结果封装到stations指定属性的变量中
+>           column：
+>                 指定列作为查询的参数
+>           fetchType：
+>                 eager：立即加载
+>                 lazy：延迟加载
+>         -->
+>         <collection
+>                 property="stations"
+>                 select="com.mybatis.dao.SubwayStationdao.getbyid"
+>                 column="subwayId" fetchType="lazy"/>
+>     </resultMap>
+>     <select id="getLazy" resultMap="SubWayMapLazy" parameterType="java.lang.Integer">
+>         select * from subway where  subway.subwayId=#{id}
+>     </select>
+> ```
+>
+> 测试：
+>
+> ```java
+> @Test
+>     public void test3() throws InterruptedException {
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         SubWaydao studentdao = sqlSession.getMapper(SubWaydao.class);
+>         SubWay subWay =studentdao.getLazy(1);
+>         //执行之后睡眠5秒钟在执行
+>         Thread.sleep(5000);
+>         List<SubWayStation> stations= subWay.getStations();
+>         for (SubWayStation wayStation:stations )
+>         {
+> 
+>             System.out.println(wayStation.getSubwayStationName());
+>         }
+>         System.out.println(subWay);
+>         sqlSession.close();
+>     }
+> ```
+
+### 查询缓存
+
+#### 一级缓存
+
+> 一级缓存是默认的，当执行了新增/修改/删除动作之后会自动清空一级缓存，一级缓存没有什么用
+>
+> ```java
+> @Test
+>     public void test(){
+>         /*获得SqlSession对象*/
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         SubwayStationdao studentdao = sqlSession.getMapper(SubwayStationdao.class);
+>         List<SubWayStation> userList = studentdao.getbyid(1);
+>         for (SubWayStation user : userList) {
+>             System.out.println(user);
+>         }
+>         //执行了新增修改删除缓存会清空
+>         sqlSession.commit();//执行了新增修改删除必须要提交
+>         //从缓存中拿数据
+>         List<SubWayStation> userList1 = studentdao.getbyid(1);
+>         for (SubWayStation user : userList1) {
+>             System.out.println(user);
+>         }
+>         //如果sqlSession关闭一级缓存就会清空
+>         sqlSession.close();
+>     }
+> ```
+
+#### 二级缓存
+
+> mybatis的缓存是mapper范围级别的，处理在mybatis-config.xml文件中配置全局的，还要在每个Mapper.xml中开启二级缓存
+
+在核心配置文件
+
+> ```xml
+> <settings>
+>     <setting name="cacheEnabled" value="true"/>
+> </settings>
+> ```
+
+在mapper.xml中开启缓存，缓存区域（HashMap）
+
+> ```xml
+> <!--在mapper的下一级写-->
+> <cache></cache>
+> ```
+
+在pojo类中实现序列化
+
+> ```java
+> @Data
+> public class SubWay implements Serializable {
+>      //Serializable实现序列化，为了将来反序列化
+> }
+> 
+> ```
+
+测试
+
+> ```java
+>  @Test
+>     public void test4()   {
+>         //查询第一次
+>         System.out.println("=================================");
+>         SqlSession sqlSession = MybatisUtils.getSqlSession();
+> 
+>         SubWaydao studentdao = sqlSession.getMapper(SubWaydao.class);
+> 
+>         SubWay subWay =studentdao.getLazy(1);
+>         System.out.println(subWay);
+>         System.out.println("=================================");
+>         //这里执行删除操作 就会清空缓存    没有新增，修改，删除commit()则不会影响二级缓存
+>         studentdao.deleteid(2);
+>         sqlSession.commit();
+>         sqlSession.close();
+> 
+>         System.out.println("=================================");
+>         //第二次查询 如果不执行新增，修改，删除，第二次的查询是从缓存中拿的
+>         SqlSession sqlSession1 = MybatisUtils.getSqlSession();
+> 
+>         SubWaydao studentdao1 = sqlSession1.getMapper(SubWaydao.class);
+> 
+>         SubWay subWay1 =studentdao1.getLazy(1);
+>         System.out.println(subWay1);
+> 
+>         sqlSession1.close();
+>     }
+> ```
+
+useCache配置禁用二级缓存
+
+> useCache=false可以禁用当前select语句的二级缓存，即每次查询都会发出sql去查询，默认情况是true，即该sql使用二级缓存。
+>
+> ```xml
+> <select id="getLazy" resultMap="SubWayMapLazy" parameterType="java.lang.Integer" useCache="false">
+>         select * from subway where  subway.subwayId=#{id}
+>     </select>
+> ```
+
+flushCache刷新缓存（清空缓存）
+
+> 在mapper的同一个namespace中，如果有其它insert、update、delete操作数据后需要刷新缓存，如果不执行刷新缓存会出现脏读。
+>
+> 设置statement配置中的flushCache="true" 属性，默认情况下为true即刷新缓存，如果改成false则不会刷新。使用缓存时如果手动修改数据库表中的查询数据会出现脏读
+>
+> ```xml-dtd
+>  <delete id="deleteid" parameterType="java.lang.Integer" flushCache="false" >
+>         delete from subwaystation where SubwayStationID=#{id}
+>     </delete>
+> ```
+
+cache参数
+
+> flushInterval（刷新间隔）可以被设置为任意的正整数，而且它们代表一个合理的毫秒形式的时间段。默认情况是不设置，也就是没有刷新间隔，缓存仅仅调用语句时刷新
+>
+> size（引用数目）可以被设置为任意正整数，要记住你缓存的对象数目和你运行环境的可用内存资源数目。默认值是1024。
+>
+> readOnly（只读）属性可以被设置为true或false。只读的缓存会给所有调用者返回缓存对象的相同实例。因此这些对象不能被修改。这提供了很重要的性能优势。可读写的缓存会返回缓存对象的拷贝（通过序列化）。这会慢一些，但是安全，因此默认是false。
+>
+> ```xml-dtd
+> <cache  eviction="FIFO" flushInterval="60000"  size="512" readOnly="true"/>
+> ```
+>
+> 这个更高级的配置创建了一个 FIFO 缓存,并每隔 60 秒刷新,存数结果对象或列表的 512 个引用,而且返回的对象被认为是只读的,因此在不同线程中的调用者之间修改它们会导致冲突。可用的收回策略有, 默认的是 LRU:
+>
+> -   LRU – 最近最少使用的:移除最长时间不被使用的对象。
+>
+> -   FIFO – 先进先出:按对象进入缓存的顺序来移除它们。
+>
+> -   SOFT – 软引用:移除基于垃圾回收器状态和软引用规则的对象。
+>
+> -    WEAK – 弱引用:更积极地移除基于垃圾收集器状态和弱引用规则的对象。
