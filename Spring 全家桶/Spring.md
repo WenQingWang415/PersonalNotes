@@ -47,7 +47,7 @@
 >
 > 2.创建配置文件
 >
-> ```java
+> ```xml
 > <?xml version="1.0" encoding="UTF-8"?>
 > <beans xmlns="http://www.springframework.org/schema/beans"
 >  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -141,7 +141,7 @@
 
 > 1.Set方式注入（Setter Injection）（基本类型）[重要]
 >
-> ```java
+> ```xml
 >  <!--申明Student对象
 >      <bean id="XX" class="XX">
 >     <property name="属性名字" value="属性值"/>
@@ -170,7 +170,7 @@
 >
 > 1.2..Set方式注入（Setter Injection）（引用类型）[重要]
 >
-> ```java
+> ```xml
 >  <bean id="mystudent" class="com.spring.wenqingwang.po.student">
 >         <property name="age" value="21"/>
 >         <property name="name" value="www"/>
@@ -192,7 +192,7 @@
 >
 > 2.构造方法注入
 >
-> ```java
+> ```xml
 >  
 >  public  student(String myname,int myage,School myschool){
 >         System.out.println("有参构造方法执行========");
@@ -237,7 +237,7 @@
 > <bean id="xx" class="xx"  autowire="byName"/>
 > ```
 >
-> ```java
+> ```xml
 > <bean id="mystudent" class="com.spring.wenqingwang.po.student" autowire="byName">
 >         <property name="age" value="21"/>
 >         <property name="name" value="www"/>
@@ -259,7 +259,7 @@
 >    
 >    提醒：在byType中，在XMl配置文件中声明bean只能有一个符合条件的，多余一个就是错误的
 >    
->    ```java
+>    ```xml
 >    <bean id="mystudent" class="com.spring.wenqingwang.po.student" autowire="byType">
 >            <property name="age" value="21"/>
 >            <property name="name" value="www"/>
@@ -277,7 +277,7 @@
 
 > 语法：
 >
-> ```java
+> ```xml
 > <import resource="classpath:其他配置文件的路径"/>
 >  关键字："classpath" 表示类路径（class文件所在的目录）
 >     在spring配置文件中要指定其他文件的位置，需要使用classpath，告诉spring在哪里读取
@@ -302,7 +302,7 @@
 >
 > 把包中的所有的类，找到类中的注解，按照注解的功能创建对象或者属性赋值
 >
-> ```java
+> ```xml
 > 指定包的三种方式，第一种
 > <context:component-scan base-package="指定你注解的包名"/>
 > 指定包的三种方式，第二种 使用分割符(,或者;)分割多个包名
@@ -603,7 +603,7 @@ public class Notenoughexception {
 
 > - 引入依赖项
 >
-> ```java
+> ```xml
 > <dependency>
 >     <groupId>org.springframework</groupId>
 >     <artifactId>spring-aspects</artifactId>
@@ -717,7 +717,7 @@ public class Notenoughexception {
 >   2. 声明切面对象
 >   3. 声明Aspectj框架中自动代理生成器标签
 >
->   ```java
+>   ```xml
 >     <!--声明组件扫描器-->
 >   <context:component-scan base-package="com.spring.wenqingwang.service.be01"/>
 >       <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
@@ -752,7 +752,7 @@ public class Notenoughexception {
 
 ==所有的通知都可使用JoinPoint 必须是第一个位置的参数==
 
-> ```
+> ```java
 > /**
 >      * 指定通知中的参数：JoinPoint
 >      * JoinPoint：业务方法，添加要切入的功能的业务方法
@@ -837,7 +837,7 @@ public class Notenoughexception {
 >
 > xml扫描组件
 >
-> ```java
+> ```xml
 > <!--声明组件扫描器-->
 > <context:component-scan base-package="com.spring.wenqingwang.service.be02"/>
 > <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
@@ -949,7 +949,7 @@ public class Notenoughexception {
 >
 > xml扫描组件
 >
-> ```java
+> ```xml
 > <!--声明组件扫描器-->
 >     <context:component-scan base-package="com.spring.wenqingwang.service.be03"/>
 >     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
@@ -1022,7 +1022,7 @@ public class Notenoughexception {
 >
 > xml配置
 >
-> ```java
+> ```xml
 >   <!--声明组件扫描器-->
 >     <context:component-scan base-package="com.spring.wenqingwang.service.be04"/>
 >     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
@@ -1094,7 +1094,7 @@ public class Notenoughexception {
 >
 > xml扫描器
 >
-> ```java
+> ```xml
 > <!--声明组件扫描器-->
 >     <context:component-scan base-package="com.spring.wenqingwang.service.be05"/>
 >     <!--声明自动代理生成器，使用 Aspectj的内部功能，创建目标代理对象，
@@ -1147,7 +1147,7 @@ public class Notenoughexception {
 
 ##### 使用Cglib代理
 
-> ```java
+> ```xml
 > <!--如果你是的期望是Cglib代理 expose-proxy="true" 告诉框架使用Cglib代理-->
 >     <aop:aspectj-autoproxy expose-proxy="true"/>
 >  //没有接口是cglib代理
@@ -1289,7 +1289,7 @@ public class Notenoughexception {
 >
 > Spring使用事务的步骤：
 >
-> ```java
+> ```xml
 >     <!-- 1.使用spring的事务处理事务-->
 >     <!--声明事务管理器-->
 >     <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -1312,7 +1312,7 @@ public class Notenoughexception {
 
 > 1. 引入依赖
 >
->    > ```java
+>    > ```xml
 >    > <dependency>
 >    >     <groupId>org.springframework</groupId>
 >    >     <artifactId>spring-aspects</artifactId>
@@ -1324,7 +1324,7 @@ public class Notenoughexception {
 >
 > 2. 声明事务管理器
 >
->    > ```java
+>    > ```xml
 >    > <bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 >    >         <!--连接数据源-->
 >    >         <property name="dataSource" ref="myDataSource"/>
@@ -1335,7 +1335,7 @@ public class Notenoughexception {
 >
 > 3. 声明方法需要的事务类型（ 【传播行为，隔离级别，超时】）
 >
->    > ```java
+>    > ```xml
 >    >  <!-- 1.使用spring的事务处理事务-->
 >    >     <!--声明事务管理器-->
 >    >     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -1378,7 +1378,7 @@ public class Notenoughexception {
 
 #### 配置监听器
 
-> ```
+> ```xml
 > web.xml配置
 > <!-- 注册监听器contextConfigLocation
 > 监听器创建对象后后，读取WEB-INF/applicationContext.xml
