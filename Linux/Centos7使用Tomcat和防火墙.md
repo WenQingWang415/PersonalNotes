@@ -54,10 +54,11 @@ firewall-cmd --list-all    # 查看全部信息
 firewall-cmd --list-ports  # 只看端口信息
 
 # 开启端口
-开端口命令：firewall-cmd --zone=public --add-port=80/tcp --permanent
+开端口命令：firewall-cmd --zone=public --add-port=8091/tcp --permanent
 重启防火墙：systemctl restart firewalld.service
-
-命令含义：
+#关闭端口
+关闭端口命令： firewall-cmd --permanent --zone=public --remove-port=8091/tcp
+重启防火墙：systemctl restart firewalld.service
 --zone #作用域
 --add-port=80/tcp  #添加端口，格式为：端口/通讯协议
 --permanent   #永久生效，没有此参数重启后失效
@@ -102,14 +103,14 @@ firewall-cmd --list-ports  # 只看端口信息
 > #在下面增加如下代码
 > 
 > export CATALINA_BASE=$CATALINA_2_BASE
-> 
 > export CATALINA_HOME=$CATALINA_2_HOME
 > 
-> export CATALINA_BASE=$CATALINA_BASE
-> 
-> export CATALINA_HOME=$CATALINA_HOME
 > #保存
 > #然后重启两个Tomact
 > ```
+> 
+> <span style="color:red">修改端口上面的没有配置</span>
+> 
+> ![image.png](https://i.loli.net/2020/12/28/mTAKbJCaHzgVODX.png)
 >
 > 
