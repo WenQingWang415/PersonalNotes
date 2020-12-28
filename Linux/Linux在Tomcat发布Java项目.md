@@ -23,7 +23,7 @@
 ![image.png](https://i.loli.net/2020/12/25/nGvzpgfj5CbVOiu.png)
 
 ```shell
-<Context path="" docBase="jenkins" reloadable="true"></Context>
+<Context path="" docBase="solomon" reloadable="true"></Context>
 
 #docBase要改成你的项目目录。
 #path为虚拟路径,访问时的路径，注意:不是根目录的，如果是其他路径比如"/test"一定要加"/"" debug建议设置为0

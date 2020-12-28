@@ -63,3 +63,53 @@ firewall-cmd --list-ports  # 只看端口信息
 --permanent   #永久生效，没有此参数重启后失效
 ```
 
+#### 在同一台服务器下运行多个Tomact
+
+> ```shell
+> #打开文件编辑环境变量
+> vim /etc/profile
+> 
+> #第一台tomact
+> CATALINA_BASE=/usr/tomcat/tomcat9
+> 
+> CATALINA_HOME=/usr/tomcat/tomcat9
+> 
+> TOMCAT_HOME=/usr/tomcat/tomcat9
+> 
+> export CATALINA_BASE CATALINA_HOME TOMCAT_HOME
+> 
+> #第二台tomact
+> CATALINA_2_BASE=/usr/tomcat/tomcat9.0
+> 
+> CATALINA_2_HOME=/usr/tomcat/tomcat9.0
+> 
+> TOMCAT_2_HOME=/usr/tomcat/tomcat9.0
+> 
+> export CATALINA_2_BASE CATALINA_2_HOME TOMCAT_2_HOME
+> 
+> #保存退出。
+> 
+> #再输入：
+> source /etc/profile
+> 
+> #才能生效。
+> 
+> #第一个tomcat，保持解压后的原状不用修改, 来到第二个tomcat的bin目录下
+> 打开catalina.sh ，找到下面红字，
+> 
+>  # OS specific support.  $var _must_ be set to either true or false.
+> 
+> #在下面增加如下代码
+> 
+> export CATALINA_BASE=$CATALINA_2_BASE
+> 
+> export CATALINA_HOME=$CATALINA_2_HOME
+> 
+> export CATALINA_BASE=$CATALINA_BASE
+> 
+> export CATALINA_HOME=$CATALINA_HOME
+> #保存
+> #然后重启两个Tomact
+> ```
+>
+> 
