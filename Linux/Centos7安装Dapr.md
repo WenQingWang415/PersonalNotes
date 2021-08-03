@@ -1,0 +1,1 @@
+https://docs.dapr.io/zh-hans/getting-started/install-dapr-cli/

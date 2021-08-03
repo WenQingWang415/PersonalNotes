@@ -10,7 +10,7 @@
 uname -r
 ```
 
-![image.png](https://i.loli.net/2020/12/24/MihpSl38ytbOT6J.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/MihpSl38ytbOT6J.png)
 
 **2.卸载旧版本（如果之前安装过的话）**
 
@@ -18,7 +18,7 @@ uname -r
 yum -y remove docker docker-common docker-selinux docker-engine
 ```
 
-![image.png](https://i.loli.net/2020/12/24/a5oX6VZEuRKnIby.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/a5oX6VZEuRKnIby.png)
 
 ## 二、安装Docker的详细步骤
 
@@ -30,7 +30,7 @@ yum -y remove docker docker-common docker-selinux docker-engine
 yum install -y yum-utils device-mapper-persistent-data lvm2
 ```
 
-![image.png](https://i.loli.net/2020/12/24/gl6E8smWzHMtTVc.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/gl6E8smWzHMtTVc.png)
 
 **2.设置 yum 源**
 
@@ -42,7 +42,7 @@ yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 ```
 
-![image.png](https://i.loli.net/2020/12/24/PxFwAIqGSkyplVY.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/PxFwAIqGSkyplVY.png)
 
 **3.更新并安装Docker-CE**
 
@@ -65,5 +65,5 @@ service docker start
 docker version
 ```
 
-![image.png](https://i.loli.net/2020/12/24/2QPOyzvKHh8qDBk.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/2QPOyzvKHh8qDBk.png)
 

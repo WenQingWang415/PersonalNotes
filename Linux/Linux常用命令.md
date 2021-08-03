@@ -8,7 +8,7 @@
 >
 > 如图：
 >
-> ![image.png](https://i.loli.net/2020/12/22/35SZ6eBfHNpF8Qy.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/35SZ6eBfHNpF8Qy.png)
 >
 > 目录结构的解释：
 >
@@ -126,7 +126,7 @@ chown [-R] 属主名：属组名 文件名
 > chmod 770 文件或者目录
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/23/fZcxCQeXnBb29zW.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/fZcxCQeXnBb29zW.png)
 
 #### 创建目录（mkdir）
 

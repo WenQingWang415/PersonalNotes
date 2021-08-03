@@ -20,7 +20,7 @@
 
 > 修改conf→server.xml
 
-![image.png](https://i.loli.net/2020/12/25/nGvzpgfj5CbVOiu.png)
+![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/nGvzpgfj5CbVOiu.png)
 
 ```shell
 <Context path="" docBase="solomon" reloadable="true"></Context>

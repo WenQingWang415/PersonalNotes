@@ -6,7 +6,7 @@
 
 ### Mybatis工作流程
 
->   ![工作流程](https://i.loli.net/2020/12/17/wVzOfvJlsnPSYB7.png)
+>   ![工作流程]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/wVzOfvJlsnPSYB7.png)
 >
 > 1. 加载配置并初始化
 >
@@ -42,7 +42,7 @@
 >
 > **Mybatis大致流程：**
 >
-> ![image.png](https://i.loli.net/2020/12/17/MB31w8SAVEzuq7l.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/MB31w8SAVEzuq7l.png)
 >
 > > **Mybatis配置**：
 > >
@@ -67,11 +67,11 @@
 
 ### Mybatis整体架构
 
->   ![image.png](https://i.loli.net/2020/12/17/rcZ9IkTbVt4UBf6.png)
+>   ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/rcZ9IkTbVt4UBf6.png)
 >
 > 每一层的详解：
 >
-> ![image.png](https://i.loli.net/2020/12/17/jZGkNQ62XhzUbWY.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/jZGkNQ62XhzUbWY.png)
 
 #### API接口层
 
@@ -94,7 +94,7 @@
 
 > 负责最基础的功能支撑，包括连接管理，事务管理，配置加载和缓存处理，这些都是共用的东西，将他们抽取出来作为最基础的组件，为上层的数据处理层提供最基础的支撑
 >
-> ![image.png](https://i.loli.net/2020/12/17/P8fnHcNEsASiwtl.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/P8fnHcNEsASiwtl.png)
 
 ### Mybatis主要的成员变量
 
@@ -140,7 +140,7 @@
 
 ### Mybatis层次结构图
 
-> ![image.png](https://i.loli.net/2020/12/17/asmEyMQk8wqBZxC.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/asmEyMQk8wqBZxC.png)
 
 ### IntelliJ IDEA 统一设置编码为utf-8编码
 
@@ -402,19 +402,19 @@ public class UserDaoTest {
 
 > - `mapper`接口的全限定名要和`mapper`映射文件的`namespace`值一致
 >
->     ![image.png](https://i.loli.net/2020/12/17/5iGonESyZrJas2z.png)
+>     ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/5iGonESyZrJas2z.png)
 >
 > - `mapper`接口的方法名称要和`mapper`映射文件的`statement`的`id`一致
 >
->     ![image.png](https://i.loli.net/2020/12/17/uOlNXCe3JgrTfH9.png)
+>     ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/uOlNXCe3JgrTfH9.png)
 >
 > - `mapper`接口的方法参数类型要和`mapper`映射文件的`statement`的`paramenterType`的值一致
 >
->     ![image.png](https://i.loli.net/2020/12/17/GxRmjNLI87aMCQ6.png)
+>     ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/GxRmjNLI87aMCQ6.png)
 >
 > - `mapper`接口的方法返回值类型和`mapper`映射文件的`statement`的`resultType`的值一致
 >
->     ![image.png](https://i.loli.net/2020/12/17/87IVkYxnluUpFcO.png)
+>     ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/87IVkYxnluUpFcO.png)
 
 ### 日志配置
 

@@ -48,7 +48,7 @@ cd sbin/
 
 **<span style="color:red">nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)</span>**
 
-> ![image.png](https://i.loli.net/2020/12/26/ZS6W4oh9MaBKegD.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/ZS6W4oh9MaBKegD.png)
 >
 > ```shell
 > #1.执行命令
@@ -65,7 +65,7 @@ cd sbin/
 >
 > 执行结果如图：
 >
-> ![image.png](https://i.loli.net/2020/12/26/5jUP4eRElk19M7W.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/5jUP4eRElk19M7W.png)
 >
 > 然后执行 查看80端口是否分给80端口
 >
@@ -73,7 +73,7 @@ cd sbin/
 > netstat -ntlp
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/26/iTmbjUpJu5Mw62l.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/iTmbjUpJu5Mw62l.png)
 >
 > 解决办法
 > 第一步，对80端口进行防火墙配置：
@@ -90,4 +90,4 @@ cd sbin/
 >
 > 如果不行再看阿里云或者腾讯云是否在安全组配置80端口
 >
-> ![image.png](https://i.loli.net/2020/12/26/kL9pHRoIfqOnFG7.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/kL9pHRoIfqOnFG7.png)

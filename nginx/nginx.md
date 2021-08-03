@@ -608,7 +608,7 @@ expires 1h;
 
 **还不懂？看下图：**
 
-![image-20201117160938187](https://i.loli.net/2020/11/17/UdxcYTkClfOHrqm.png)
+![image-20201117160938187](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/UdxcYTkClfOHrqm.png)
 
 
 
@@ -616,7 +616,7 @@ expires 1h;
 
 ###### **访问本来无法访问的资源**
 
-![image-20201117162748551](https://i.loli.net/2020/11/17/ksm5bGASv9FI1KP.png)
+![image-20201117162748551]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/ksm5bGASv9FI1KP.png)
 
 我们抛除复杂的网络路由情节来看图，图中路由器从左到右为R1,R2假设最初用户A要访问目标服务器需要经过R1和R2路由器这样一个路由节点，如果路由器R1或者路由器R2发生故障，那么就无法访问目标服务器了。但是如果用户A让代理服务器去代替自己访问目标服务器，由于代理服务器没有在路由器R1或R2节点中，而是通过其它的路由节点访问目标服务器，那么用户A就可以得到目标服务器的数据了。现实中的例子就是“翻墙”。不过自从VPN技术被广泛应用外，“翻墙”不但使用了传统的正向代理技术，有的还使用了VPN技术。
 
@@ -628,7 +628,7 @@ expires 1h;
 
 **对客户端访问授权，上网进行认证**
 
-![image-20201117170137376](https://i.loli.net/2020/11/17/5DoimvAGgE6TkrL.png)
+![image-20201117170137376]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/5DoimvAGgE6TkrL.png)
 
 防火墙作为网关，用来过滤外网对其的访问。假设用户A和用户B都设置了代理服务器，用户A允许访问互联网，而用户B不允许访问互联网（这个在代理服务器上做限制）这样用户A因为授权，可以通过代理服务器访问到目标服务器，而用户B因为没有被代理服务器授权，所以访问目标服务器时，数据包会被直接丢弃。
 
@@ -636,7 +636,7 @@ expires 1h;
 
 
 
-![image-20201117170303660](https://i.loli.net/2020/11/17/MbC8sfg76c2a3RL.png)
+![image-20201117170303660]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/MbC8sfg76c2a3RL.png)
 
 目标服务器并不知道访问自己的实际是用户A，因为代理服务器代替用户A去直接与目标服务器进行交互。如果代理服务器被用户A完全控制（或不完全控制），会惯以“肉鸡”术语称呼
 
@@ -784,7 +784,7 @@ http {
 
 说明：
 
-![image-20201118105426025](https://i.loli.net/2020/11/18/1SGADikBP39OcUg.png)
+![image-20201118105426025](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//1SGADikBP39OcUg.png)
 
 #### 2.加权轮询发（weight）
 

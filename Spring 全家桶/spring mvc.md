@@ -14,7 +14,7 @@
 
 #### 请求处理流程
 
-![image.png](https://i.loli.net/2020/12/12/uQ9tBREJw6aoG7F.png)
+![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/uQ9tBREJw6aoG7F.png)
 
 对工作原理的解释说明：
 
@@ -42,19 +42,19 @@
 
 > 第一步：选择maven项目
 >
-> ![image.png](https://i.loli.net/2020/12/11/i2CEazy3k61bg4m.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/i2CEazy3k61bg4m.png)
 >
 > 第二步：填写项目名字以及路径
 >
-> ![image.png](https://i.loli.net/2020/12/11/aGhlIP7ZTjAsU3R.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/aGhlIP7ZTjAsU3R.png)
 >
 > 第三步：选择自己安装的maven以及配置
 >
-> ![image.png](https://i.loli.net/2020/12/11/IamhZcOWU3fzMPl.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/IamhZcOWU3fzMPl.png)
 >
 > 第四步：补全目录
 >
-> ![image.png](https://i.loli.net/2020/12/11/Wyts9xrIivPZouC.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/Wyts9xrIivPZouC.png)
 >
 > 
 
@@ -117,7 +117,7 @@
 >
 > **或者在IDea设置**
 >
-> ![image.png](https://i.loli.net/2020/12/12/5x3iGYEZBWgHR2p.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/5x3iGYEZBWgHR2p.png)
 
 ##### 在src/main/resources创建spring-config.xml
 
@@ -259,7 +259,7 @@ ${hello}
 
 ##### 配置Tomcat
 
-> ![image.png](https://i.loli.net/2020/12/12/WZV8fIxmXlLz2iB.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/WZV8fIxmXlLz2iB.png)
 >
 > 在spring-config.xml配置视图解析器
 >
@@ -823,5 +823,5 @@ public class AuthInterceptor  implements HandlerInterceptor {
 
 > 执行顺序首先看spring-config.xml多个拦截器配置的位置
 >
-> ![image.png](https://i.loli.net/2020/12/15/XtYbLydqzD6a1eV.png)
+> ![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/XtYbLydqzD6a1eV.png)
 

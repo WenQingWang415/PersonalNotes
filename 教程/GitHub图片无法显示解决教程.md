@@ -10,7 +10,7 @@
 
 ### 第三步 添加hosts配置
 
-![image.png](https://i.loli.net/2020/12/15/15qoRWfpUwNjOSl.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/15qoRWfpUwNjOSl.png)
 
 ```
 199.232.96.133 raw.githubusercontent.com

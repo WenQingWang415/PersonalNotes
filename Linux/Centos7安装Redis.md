@@ -82,4 +82,4 @@ ps -ef|grep redis
 #提示如下
 ```
 
-![image.png](https://i.loli.net/2021/01/02/nN2YItOXZySj3bR.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/nN2YItOXZySj3bR.png)

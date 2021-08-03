@@ -24,21 +24,21 @@
 
 > [Maven](https://maven.apache.org/download.cgi)下载
 >
-> ![image.png](https://i.loli.net/2020/12/15/gKdLTjPBwh9irSb.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//gKdLTjPBwh9irSb.png)
 >
 > Maven目录说明：
 >
-> ![image.png](https://i.loli.net/2020/12/15/XwROhL6W3UvA95s.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//XwROhL6W3UvA95s.png)
 
 #### 第三步：配置Maven环境变量
 
 > 首先配置 系统变量 MAVEN_HOME ==变量名称固定不能改==
 >
-> ![image.png](https://i.loli.net/2020/12/15/WamZRD6qixEks1J.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//WamZRD6qixEks1J.png)
 >
 > 然后配置环境变量：%MAVEN_HOME%\bin
 >
-> ![image.png](https://i.loli.net/2020/12/15/4DLZWVREmTKOdcS.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//4DLZWVREmTKOdcS.png)
 >
 > ==**然后一路确定**，**保存环境变量**==
 >
@@ -46,7 +46,7 @@
 >
 > 在cmd命令输入`mvn -v`输出信息如图：
 >
-> ![image.png](https://i.loli.net/2020/12/15/PfTASErNxUK2mjV.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//PfTASErNxUK2mjV.png)
 >
 > 
 
@@ -59,7 +59,7 @@
 >
 > 配置自定义的本地仓库位置`conf/settings.xml`中配置自定义仓库
 >
-> ![image.png](https://i.loli.net/2020/12/15/svoUXnY5yrIZh7x.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//svoUXnY5yrIZh7x.png)
 >
 > 
 
@@ -78,11 +78,11 @@
 > </mirror>
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/15/eMRNY3UIAtsEfvB.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//eMRNY3UIAtsEfvB.png)
 
 ### idea中配置Maven
 
-> ![image.png](https://i.loli.net/2020/12/15/NQVA14IXw3t6UuM.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//NQVA14IXw3t6UuM.png)
 
 ### Maven常用的命令
 
@@ -154,7 +154,7 @@
 
 ### idea执行命令
 
-> ![image.png](https://i.loli.net/2020/12/15/JTEV7Zb9jIvxHri.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com//JTEV7Zb9jIvxHri.png)
 
 ### Maven核心概念
 
@@ -206,19 +206,19 @@
 > </dependency>
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/16/vVf4HtqnPBLARke.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/vVf4HtqnPBLARke.png)
 
 #### 依赖冲突
 
 > 如果直接依赖和间接依赖中包含有同一个坐标不同版本的资源依赖 ，以直接依赖的版本为准（就近原则）
 >
-> ![image.png](https://i.loli.net/2020/12/16/lgUKGEYhvDw4BV2.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/lgUKGEYhvDw4BV2.png)
 >
 > 
 >
 > 如果直接依赖中包含同一个坐标不同版本的资源依赖，以配置顺序下方的版本为准（就近原则）
 >
-> ![image.png](https://i.loli.net/2020/12/16/vVmGYE835pN4Akc.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/vVmGYE835pN4Akc.png)
 >
 > 
 
@@ -268,7 +268,7 @@
 >         </dependency>
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/16/tkc4fxFDEI6BKJv.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/tkc4fxFDEI6BKJv.png)
 
 ### 生命周期
 
@@ -369,17 +369,17 @@
 >
 > - 删除整个src目录
 >
-> ![image.png](https://i.loli.net/2020/12/16/Fy2feV7lrNpgDP5.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/Fy2feV7lrNpgDP5.png)
 
 #### 创建子工程
 
 > 在idea中子工程（模块）创建如图
 >
-> ![image.png](https://i.loli.net/2020/12/16/YtaJu61LIXmVTrE.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/YtaJu61LIXmVTrE.png)
 >
 > 创建成功之后pom.xml
 >
-> ![image.png](https://i.loli.net/2020/12/16/TJg6iLMjUwuqN2v.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/TJg6iLMjUwuqN2v.png)
 
 #### 父工程统一管理jar的版本号
 

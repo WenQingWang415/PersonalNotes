@@ -41,7 +41,7 @@ yum install wget
 密码：Oracle123
 ```
 
-![image.png](https://i.loli.net/2020/12/24/AEbGhtgHOB7k1cf.png)
+![image.png](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/AEbGhtgHOB7k1cf.png)
 
 ```shell
 #下载之后上传

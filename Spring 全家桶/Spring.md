@@ -229,7 +229,7 @@
 >
 > 属性名与配置文件id一样如图
 >
-> ![属性名与配置文件id一样如图](https://i.loli.net/2020/12/01/cRusJfyZBOVb2No.png)
+> ![属性名与配置文件id一样如图](https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/cRusJfyZBOVb2No.png)
 >
 > 语法：
 >
@@ -369,7 +369,7 @@
 >
 > 等价于xml注入如图：
 >
-> ![](https://i.loli.net/2020/12/01/puMFrR2TqI4axbO.png)
+> ![]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/puMFrR2TqI4axbO.png)
 
 #####@Autowired（byName注入） 需要配合@Qualifier("xx")注解使用
 
@@ -383,7 +383,7 @@
 >
 > 
 >
-> ![](https://i.loli.net/2020/12/01/VuIrxX1ycjkWCBQ.png)
+> ![]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/VuIrxX1ycjkWCBQ.png)
 
 #####@Resource(jdk中的注解)
 
@@ -416,7 +416,7 @@
 >
 > @Resource的作用相当于@Autowired，只不过@Autowired按照byType自动注入。
 >
-> ![](https://i.loli.net/2020/12/01/FtcxHmNsTQ34gq7.png)
+> ![]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/FtcxHmNsTQ34gq7.png)
 
 ##### @Configuration 
 
@@ -728,7 +728,7 @@ public class Notenoughexception {
 >
 >   如图：
 >
->   ![](https://i.loli.net/2020/12/02/scrieb8GpWX6JS1.png)
+>   ![]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/scrieb8GpWX6JS1.png)
 >
 > - 测试
 >
@@ -860,7 +860,7 @@ public class Notenoughexception {
 > }
 > ```
 >
-> ![image.png](https://i.loli.net/2020/12/02/XVDN9LhdkzruHCi.png)
+> ![image.png]( https://wwq-notes.oss-cn-guangzhou.aliyuncs.com/XVDN9LhdkzruHCi.png)
 >
 > 
 >
